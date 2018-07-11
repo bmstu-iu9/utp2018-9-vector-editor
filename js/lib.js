@@ -6,13 +6,13 @@ function changeLabelSelected() {
   label.innerText = currentInstrument.alt;
 }
 
-/*Функция, возвращающая координаты объемливающего элемента*/
+/*Функция, возвращающая координаты объемлющего элемента*/
 const getBoxCoords = (elem) => {
     let box = elem.getBoundingClientRect();
     return { top: box.top + pageYOffset, left: box.left + pageXOffset };
 };
 
-/*Фукнция, возвращающая координы мыши*/
+/*Функция, возвращающая координаты мыши.*/
 const getMouseCoords = (event) => {
     const coords = getBoxCoords(drawPanel);
     return { x: event.pageX - coords.left, y: event.pageY - coords.top };
