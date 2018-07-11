@@ -1,14 +1,15 @@
 /*Скрипт для работы инструмента "Рука"*/
 /*Drag and Drop холста*/
 
-hand = document.getElementById("hand");
-drawPanel = document.getElementById("draw-panel");
+'use strict';
+
+const hand = document.getElementById("hand");
 
 drawPanel.onmousedown = function(event) {
   if (!hand.checked) {
     return;
   }
-  let coords = getCoords(drawPanel);
+  let coords = getBoxCoords(drawPanel);
   let shiftX = event.pageX - coords.left;
   let shiftY = event.pageY - coords.top;
 
@@ -35,9 +36,4 @@ drawPanel.onmousedown = function(event) {
   drawPanel.ondragstart = function() {
     return false;
   };
-
-  function getCoords(elem) {
-    let box = elem.getBoundingClientRect();
-    return { top: box.top + pageYOffset, left: box.left + pageXOffset};
-  }
 }
