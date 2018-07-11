@@ -2,8 +2,8 @@
 
 /*Функция, изменяющая надпись "Выбранный инструмент"*/
 function changeLabelSelected() {
- 	const label = document.getElementById("selected-instrument");
-	label.innerText = currentInstrument.alt;
+    const label = document.getElementById("selected-instrument");
+    label.innerText = currentInstrument.alt;
 }
 
 /*Функция, возвращающая координаты объемлющего элемента*/
