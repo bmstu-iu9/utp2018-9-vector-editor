@@ -8,7 +8,6 @@ svgPanel.onmousedown = startDrawing;
 svgPanel.onmouseup = stopDrawing;
 svgPanel.onmousemove = draw;
 
-
 function startDrawing(event){
   if(!brush.checked)
     return;
