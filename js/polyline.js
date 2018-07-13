@@ -86,7 +86,7 @@
         svgPanel.appendChild(tmpLine);
         const refPoints = [];
         let finished = false;
-        let pointTaken = false;
+        let somePointTaken = false;
         someFigureTaken = true;
 
         const getMergeCoords = (e) => {
@@ -115,7 +115,7 @@
             };
 
             const deletePoint = (e) => {
-                if (!cursor.checked || pointTaken || someFigureTaken) {
+                if (!cursor.checked || somePointTaken || someFigureTaken) {
                     return;
                 }
                 e.preventDefault();
@@ -140,14 +140,17 @@
             };
 
             const takePoint = (e) => {
-                if (!cursor.checked || pointTaken || someFigureTaken) {
+                if (!cursor.checked || somePointTaken || someFigureTaken) {
                     return;
                 }
+
                 const ind = indexOfSVGPoint(polyline, getMergeCoords(e)[0]);
+                const iSCP = isStartCornerPushed(ind);
+
                 const movePoint = (e) => {
                     const coords = getMouseCoords(e);
                     refPoint.setAttribute('fill', '#0000FF');
-                    if (isStartCornerPushed(ind)) {
+                    if (iSCP) {
                         setCoord(refPoints[0], coords);
                         replaceSVGPoint(polyline, coords, 0);
                         replaceSVGPoint(polyline, coords, polyline.points.numberOfItems - 1);
@@ -160,10 +163,10 @@
                 const fixPoint = (e) => {
                     const current = refPoints.findIndex((x) => x == refPoint);
                     const clicked = indexOfSVGPoint(polyline, getMergeCoords(e)[0], current);
-                    if (clicked !== undefined && !isStartCornerPushed(current)) {
+                    if (clicked !== undefined && !iSCP) {
                         return;
                     }
-                    pointTaken = someFigureTaken = false;
+                    somePointTaken = someFigureTaken = false;
                     document.removeEventListener('mousemove', movePoint);
                     refPoint.addEventListener('click', takePoint);
                     refPoint.addEventListener('contextmenu', deletePoint);
@@ -172,14 +175,14 @@
                 };
 
                 const stopMovingByLeftPanel = () => {
-                    if (cursor.checked && pointTaken) {
+                    if (cursor.checked && somePointTaken) {
                         movePoint(e);
                         refPoint.dispatchEvent(e);
                         refPoint.dispatchEvent(new Event('mouseout'));
                     }
                 };
 
-                pointTaken = someFigureTaken = true;
+                somePointTaken = someFigureTaken = true;
                 document.addEventListener('mousemove', movePoint);
                 refPoint.removeEventListener('click', takePoint);
                 refPoint.removeEventListener('contextmenu', deletePoint);
@@ -187,19 +190,11 @@
                 leftPanel.addEventListener('click', stopMovingByLeftPanel);
             };
 
-            const dispatchAndColor = (e, color) => {
-                if ( (pen.checked && (!someFigureTaken || !finished)) ||
-                    (cursor.checked && !someFigureTaken) ) {
-                    polyline.dispatchEvent(new Event(e));
-                    refPoint.setAttribute('fill', color);
-                }
-            };
-
             const refPoint = createSVGElem('circle');
             refPoint.setAttribute('r', 3);
             setCoord(refPoint, point);
-            refPoint.addEventListener('mouseover', () => { dispatchAndColor('mouseover', '#0000FF'); });
-            refPoint.addEventListener('mouseout', () => { dispatchAndColor('mouseout', '#FFFFFF'); });
+            refPoint.addEventListener('mouseover', () => refPoint.setAttribute('fill', '#0000FF'));
+            refPoint.addEventListener('mouseout', () => refPoint.setAttribute('fill', '#FFFFFF'));
             refPoint.addEventListener('click', takePoint);
             refPoint.addEventListener('contextmenu', deletePoint);
             return refPoint;
@@ -211,7 +206,7 @@
                 return;
             }
             const [point, merged] = getMergeCoords(e);
-            if (refPoints.length > 1 && equalPoints(point, polyline.points[0])) {
+            if (refPoints.length > 2 && equalPoints(point, polyline.points[0])) {
                 polyline.points.appendItem(newSVGPoint(point));
                 moveStartOfTmpLine(tmpLine);
                 finishPolyline();
@@ -236,6 +231,10 @@
         const stopDrowingByLeftPanel = () => {
             if (pen.checked && !finished) {
                 finishPolyline();
+                if (polyline.points.numberOfItems == 1) {
+                    svgPanel.removeChild(polyline);
+                    svgPanel.removeChild(refPoints.pop());
+                }
             }
         };
 
@@ -266,28 +265,28 @@
             someFigureTaken = false;
 
             let isShowing = true;
-            const check = () => { return cursor.checked && !pointTaken && !someFigureTaken; };
-            const del = () => {
+            const check = () => cursor.checked && !somePointTaken && !someFigureTaken;
+            const hide = () => {
                 if ((check() || pen.checked) && isShowing) {
                     hideRefPoints();
                     isShowing = false;
                 }
             };
-            drawPanel.addEventListener('click', del);
+            drawPanel.addEventListener('click', hide);
             polyline.addEventListener('click', () => {
-                if ((check() || pen.checked) && !isShowing) {
+                if (check() && !isShowing) {
                     showRefPoints();
                     isShowing = true;
                 }
             });
             polyline.addEventListener('mouseover', () => {
-                if (check() || pen.checked) {
-                    drawPanel.removeEventListener('click', del);
+                if (check()) {
+                    drawPanel.removeEventListener('click', hide);
                 }
             });
             polyline.addEventListener('mouseout', () => {
-                if (check() || pen.checked) {
-                    drawPanel.addEventListener('click', del);
+                if (check()) {
+                    drawPanel.addEventListener('click', hide);
                 }
             });
         };
