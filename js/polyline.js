@@ -24,7 +24,7 @@
 
 (function() {
 
-    const pen = document.getElementById('plus');
+    const pen = document.getElementById('pen');
     const cursor = document.getElementById('cursor');
     const leftPanel = document.getElementById('left-panel');
     let someFigureTaken = false;
@@ -78,9 +78,8 @@
         }
 
         const clickCoord = getMouseCoords(event);
-        const polyline = createSVGElem('polyline');
+        const polyline = createSVGElem('polyline', 'none');
         const tmpLine = createTmpLine(clickCoord);
-        polyline.setAttribute('fill', 'none');
         svgPanel.appendChild(polyline);
         svgPanel.appendChild(tmpLine);
         const refPoints = [];
@@ -99,15 +98,15 @@
             return click;
         };
 
+        const isClosed = () => {
+            return (polyline.points[0].x == polyline.points[polyline.points.numberOfItems - 1].x &&
+                    polyline.points[0].y == polyline.points[polyline.points.numberOfItems - 1].y);
+        };
+
         const newRefPoint = (point) => {
             const setCoord = (rp, newp) => {
                 rp.setAttribute('cx', newp.x);
                 rp.setAttribute('cy', newp.y);
-            };
-
-            const isClosed = () => {
-                return (polyline.points[0].x == polyline.points[polyline.points.numberOfItems - 1].x &&
-                        polyline.points[0].y == polyline.points[polyline.points.numberOfItems - 1].y);
             };
 
             const isStartCornerPushed = (ind) => {
@@ -236,10 +235,20 @@
             }
         };
 
-        const hideOrShowRefPoints = (opacity) => {
+        const hideRefPoints = () => {
             for (let i = 0; i < refPoints.length; i++) {
-                refPoints[i].setAttribute('fill-opacity', opacity);
-                refPoints[i].setAttribute('stroke-opacity', opacity);
+                svgPanel.removeChild(refPoints[i]);
+            }
+            refPoints.length = 0;
+        };
+
+        const showRefPoints = () => {
+            const ppn = polyline.points.numberOfItems;
+            const end = isClosed() ? (ppn - 1) : ppn;
+            for (let i = 0; i < end; i++) {
+                const rp = newRefPoint(polyline.points[i]);
+                refPoints.push(rp);
+                svgPanel.appendChild(rp);
             }
         };
 
@@ -249,19 +258,34 @@
             document.removeEventListener('mousemove', moveTmpLine);
             leftPanel.removeEventListener('click', stopDrowingByLeftPanel);
             svgPanel.removeChild(tmpLine);
-            hideOrShowRefPoints(0);
-            polyline.addEventListener('mouseover', () => {
-                if (cursor.checked && !pointTaken && !someFigureTaken) {
-                    hideOrShowRefPoints(1);
-                }
-            });
-            polyline.addEventListener('mouseout',  () => {
-                if (cursor.checked && !pointTaken && !someFigureTaken) {
-                    hideOrShowRefPoints(0);
-                }
-            });
             finished = true;
             someFigureTaken = false;
+
+            let isShowing = true;
+            const check = () => { return cursor.checked && !pointTaken && !someFigureTaken; };
+            const del = () => {
+                if ((check() || pen.checked) && isShowing) {
+                    hideRefPoints();
+                    isShowing = false;
+                }
+            };
+            drawPanel.addEventListener('click', del);
+            polyline.addEventListener('click', () => {
+                if ((check() || pen.checked) && !isShowing) {
+                    showRefPoints();
+                    isShowing = true;
+                }
+            });
+            polyline.addEventListener('mouseover', () => {
+                if (check() || pen.checked) {
+                    drawPanel.removeEventListener('click', del);
+                }
+            });
+            polyline.addEventListener('mouseout', () => {
+                if (check() || pen.checked) {
+                    drawPanel.addEventListener('click', del);
+                }
+            });
         };
 
         addPoint(event);
