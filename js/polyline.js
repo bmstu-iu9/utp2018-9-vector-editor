@@ -22,8 +22,7 @@
 */
 'use strict';
 
-(function() {
-
+/* Polyline */ {
     const pen = document.getElementById('pen');
     const cursor = document.getElementById('cursor');
     const leftPanel = document.getElementById('left-panel');
@@ -31,6 +30,10 @@
 
     const containsToRefPoint = (p, rp) => {
         return (Math.abs(p.x - rp.x) <= 3 && Math.abs(p.y - rp.y) <= 3);
+    };
+
+    const equalPoints = (a, b) => {
+        return a.x == b.x && a.y == b.y;
     };
 
     const newSVGPoint = (coords) => {
@@ -42,8 +45,7 @@
 
     const indexOfSVGPoint = (polyline, point, miss = -1) => {
         for (let i = 0; i < polyline.points.numberOfItems; i++) {
-            if (i != miss && polyline.points[i].x == point.x &&
-                polyline.points[i].y == point.y) {
+            if (i != miss && equalPoints(polyline.points[i], point)) {
                     return i;
             }
         }
@@ -92,15 +94,14 @@
             for (let i = 0; i < polyline.points.numberOfItems; i++) {
                 const rp = polyline.points[i];
                 if (containsToRefPoint(click, rp)) {
-                    return { x: rp.x, y: rp.y };
+                    return [{ x: rp.x, y: rp.y }, true];
                 }
             }
-            return click;
+            return [click, false];
         };
 
         const isClosed = () => {
-            return (polyline.points[0].x == polyline.points[polyline.points.numberOfItems - 1].x &&
-                    polyline.points[0].y == polyline.points[polyline.points.numberOfItems - 1].y);
+            return equalPoints(polyline.points[0], polyline.points[polyline.points.numberOfItems - 1]);
         };
 
         const newRefPoint = (point) => {
@@ -118,7 +119,7 @@
                     return;
                 }
                 e.preventDefault();
-                const ind = indexOfSVGPoint(polyline, getMergeCoords(e));
+                const ind = indexOfSVGPoint(polyline, getMergeCoords(e)[0]);
                 if (isStartCornerPushed(ind)) {
                     polyline.points.removeItem(0);
                     replaceSVGPoint(polyline, polyline.points[0], polyline.points.numberOfItems - 1);
@@ -142,7 +143,7 @@
                 if (!cursor.checked || pointTaken || someFigureTaken) {
                     return;
                 }
-                const ind = indexOfSVGPoint(polyline, getMergeCoords(e));
+                const ind = indexOfSVGPoint(polyline, getMergeCoords(e)[0]);
                 const movePoint = (e) => {
                     const coords = getMouseCoords(e);
                     refPoint.setAttribute('fill', '#0000FF');
@@ -158,7 +159,7 @@
 
                 const fixPoint = (e) => {
                     const current = refPoints.findIndex((x) => x == refPoint);
-                    const clicked = indexOfSVGPoint(polyline, getMergeCoords(e), current);
+                    const clicked = indexOfSVGPoint(polyline, getMergeCoords(e)[0], current);
                     if (clicked !== undefined && !isStartCornerPushed(current)) {
                         return;
                     }
@@ -209,13 +210,16 @@
                 finishPolyline();
                 return;
             }
-            const point = getMergeCoords(e);
-            polyline.points.appendItem(newSVGPoint(point));
-            moveStartOfTmpLine(tmpLine);
-            if (refPoints.length > 1 &&
-                    point.x == polyline.points[0].x && point.y == polyline.points[0].y) {
+            const [point, merged] = getMergeCoords(e);
+            if (refPoints.length > 1 && equalPoints(point, polyline.points[0])) {
+                polyline.points.appendItem(newSVGPoint(point));
+                moveStartOfTmpLine(tmpLine);
                 finishPolyline();
+            } else if (merged) {
+                return;
             } else {
+                polyline.points.appendItem(newSVGPoint(point));
+                moveStartOfTmpLine(tmpLine);
                 const refp = newRefPoint(point);
                 refPoints.push(refp);
                 svgPanel.appendChild(refp);
@@ -296,5 +300,4 @@
     };
 
     drawPanel.addEventListener('click', drawPolyline);
-
-}());
+}
