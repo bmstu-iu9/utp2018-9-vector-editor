@@ -190,11 +190,19 @@
                 leftPanel.addEventListener('click', stopMovingByLeftPanel);
             };
 
+            const dispatchAndColor = (e, color) => {
+                if ( (pen.checked && (!someFigureTaken || !finished)) ||
+                    (cursor.checked && !someFigureTaken) ) {
+                    polyline.dispatchEvent(new Event(e));
+                    refPoint.setAttribute('fill', color);
+                }
+            };
+
             const refPoint = createSVGElem('circle');
             refPoint.setAttribute('r', 3);
             setCoord(refPoint, point);
-            refPoint.addEventListener('mouseover', () => refPoint.setAttribute('fill', '#0000FF'));
-            refPoint.addEventListener('mouseout', () => refPoint.setAttribute('fill', '#FFFFFF'));
+            refPoint.addEventListener('mouseover', () => { dispatchAndColor('mouseover', '#0000FF'); });
+            refPoint.addEventListener('mouseout', () => { dispatchAndColor('mouseout', '#FFFFFF'); });
             refPoint.addEventListener('click', takePoint);
             refPoint.addEventListener('contextmenu', deletePoint);
             return refPoint;
