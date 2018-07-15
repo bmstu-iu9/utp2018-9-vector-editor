@@ -11,7 +11,11 @@ const ids = ['cursor', 'hand', 'pen', 'text',
 /*Текущий выбранный инструмент*/
 let currentInstrument;
 
+/*Захвачена ли некоторая фигура*/
+let someFigureTaken = false;
+
 const drawPanel = document.getElementById('draw-panel');
+const leftPanel = document.getElementById('left-panel');
 const svgPanel = document.getElementById('svg-panel');
 const svgNS = 'http://www.w3.org/2000/svg';
 
