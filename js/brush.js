@@ -1,37 +1,63 @@
 'use strict';
 
-let shape,shiftX,shiftY,x,y,path;
+let shape,x,y,path;
 let isDrawing=false;
-let brush = document.getElementById('brush');
+let color='red',width,linecap,linejoin,miterlimit;
+const brsh = document.getElementById('brush');
 
-svgPanel.onmousedown = startDrawing;
-svgPanel.onmouseup = stopDrawing;
-svgPanel.onmousemove = draw;
+changeThickness();
+getType('round');
 
-function startDrawing(event){
-  if(!brush.checked)
-    return;
-  isDrawing = true;
-  shiftX = getMouseCoords(event).x;
-  shiftY = getMouseCoords(event).y;
-  shape = document.createElementNS(svgNS, "path");
-  shape.setAttribute('fill','none');
-  shape.setAttribute('stroke-width','10');
-  shape.setAttribute('stroke','black');
-  shape.setAttribute('stroke-linecap','round');
-  path='M '+shiftX+' '+shiftY+' L ';
-  svgPanel.appendChild(shape);
-}
+drawPanel.addEventListener('mousedown',start);
 
-function draw(event){
-  if(isDrawing) {
-    x=getMouseCoords(event).x;
-    y=getMouseCoords(event).y;
-    path+=x+' '+y+' ';
-    shape.setAttribute('d',path);
-  }
-}
+  changeThickness = ()=>{
+    width=document.getElementById('thickness').value;
+  };
 
-function stopDrawing() {
-  isDrawing = false;
-}
+  getType = (type)=> {
+    linecap=type;
+    if(type==='round')
+    {
+      linejoin='round'
+    }else{
+      linejoin='mitter';
+      miterlimit='10.0';
+    }
+  };
+
+  start = (event)=> {
+    if (!brsh.checked)
+      return;
+    drawPanel.addEventListener('mouseup',up);
+    document.addEventListener('mousemove',move);
+    isDrawing = true;
+    x = getMouseCoords(event).x;
+    y = getMouseCoords(event).y;
+    shape = document.createElementNS(svgNS, "path");
+    shape.setAttribute('fill', 'none');
+    shape.setAttribute('stroke-width', width);
+    shape.setAttribute('stroke', color);
+    shape.setAttribute('stroke-linecap', linecap);
+    shape.setAttribute('stroke-linejoin', linejoin);
+    shape.setAttribute('stroke-miterlimit', miterlimit);
+    path = 'M ' + x + ' ' + y + ' L ';
+    svgPanel.appendChild(shape);
+  };
+
+  move = (event)=> {
+    if(event.target.id==='back-panel')
+      up(event);
+    if (isDrawing) {
+      x = getMouseCoords(event).x;
+      y = getMouseCoords(event).y;
+      path +=x + ' ' + y + ' ';
+      shape.setAttribute('d', path);
+    }
+  };
+
+  up = ()=> {
+    isDrawing = false;
+    document.removeEventListener('mousemove',move);
+    drawPanel.removeEventListener('mouseup',up);
+  };
+
