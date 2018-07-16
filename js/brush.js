@@ -5,16 +5,11 @@ let isDrawing=false;
 let color='red',width,linecap,linejoin,miterlimit;
 const brsh = document.getElementById('brush');
 
-changeThickness();
-getType('round');
-
-drawPanel.addEventListener('mousedown',start);
-
-  changeThickness = ()=>{
+  const changeThickness = ()=>{
     width=document.getElementById('thickness').value;
   };
 
-  getType = (type)=> {
+  const getType = (type)=> {
     linecap=type;
     if(type==='round')
     {
@@ -25,7 +20,7 @@ drawPanel.addEventListener('mousedown',start);
     }
   };
 
-  start = (event)=> {
+  const start = (event)=> {
     if (!brsh.checked)
       return;
     drawPanel.addEventListener('mouseup',up);
@@ -44,7 +39,7 @@ drawPanel.addEventListener('mousedown',start);
     svgPanel.appendChild(shape);
   };
 
-  move = (event)=> {
+  const move = (event)=> {
     if(event.target.id==='back-panel')
       up(event);
     if (isDrawing) {
@@ -55,9 +50,12 @@ drawPanel.addEventListener('mousedown',start);
     }
   };
 
-  up = ()=> {
-    isDrawing = false;
-    document.removeEventListener('mousemove',move);
-    drawPanel.removeEventListener('mouseup',up);
-  };
+  const up = ()=> {
+      isDrawing = false;
+      document.removeEventListener('mousemove',move);
+      drawPanel.removeEventListener('mouseup',up);
+    };
 
+drawPanel.addEventListener('mousedown',start);
+changeThickness();
+getType('round');
