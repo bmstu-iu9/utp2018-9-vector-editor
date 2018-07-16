@@ -1,85 +1,105 @@
 <!DOCTYPE html>
 <html lang="ru" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>svgEditor - векторный онлайн редактор</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  </head>
-  <body>
-    <header>
-      <p id="logo"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i><b>svgEditor</b></p>
-      <div class="top-buttons-group">
+<head>
+  <meta charset="utf-8">
+  <title>svgEditor - векторный онлайн редактор</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+<body>
+<header>
+  <p id="logo"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i><b>svgEditor</b></p>
+  <div class="top-buttons-group">
+    <button class="button">
+      <i class="fa fa-plus-square" aria-hidden="true"></i>
+    </button>
+    <button class="button">
+      <i class="fa fa-folder" aria-hidden="true"></i>
+    </button>
+    <button class="button">
+      <i class="fa fa-download" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div id="selected-instrument-block">
+    <b id="selected-instrument-label">Выбранный инструмент:</b>
+    <b id="selected-instrument">Курсор</b>
+  </div>
+</header>
+<main>
+  <div id="left-panel">
+    <input type="radio" alt="Курсор" id="cursor" name="instruments" checked/>
+    <label for="cursor"><i class="fa fa-mouse-pointer"></i></label>
+    <input type="radio" alt="Рука" id="hand" name="instruments"/>
+    <label for="hand"><i class="fa fa-hand-paper" aria-hidden="true"></i></label>
+    <input type="radio" alt="Рисование по точкам" id="plus" name="instruments"/>
+    <label for="plus"><i class="fa fa-plus" aria-hidden="true"></i></label>
+    <input type="radio" alt="Текст" id="text" name="instruments"/>
+    <label for="text"><i class="fa fa-font" aria-hidden="true"></i></label>
+    <input type="radio" alt="Прямая" id="line" name="instruments"/>
+    <label for="line"><i class="fa fa-minus fa-lg" aria-hidden="true" style="transform: rotate(-45deg);"></i></label>
+    <ul>
+      <li>
         <button class="button">
-          <i class="fa fa-plus-square" aria-hidden="true"></i>
+          <i class="fa fa-caret-up fa-lg" aria-hidden="true" style="transform: scale(1.2, 1.2); display:block;"></i>
+          <i class="fa fa-circle" aria-hidden="true" style="transform: scale(0.7, 0.7);"></i>
+          <i class="fa fa-square" aria-hidden="true" style="transform: scale(0.7, 0.7);"></i>
         </button>
-        <button class="button">
-          <i class="fa fa-folder" aria-hidden="true"></i>
-        </button>
-        <button class="button">
-          <i class="fa fa-download" aria-hidden="true"></i>
-        </button>
-      </div>
-      <div id="selected-instrument-block">
-        <b id="selected-instrument-label">Выбранный инструмент:</b>
-        <b id="selected-instrument">Курсор</b>
-      </div>
-    </header>
-    <main>
-      <div id="left-panel">
-        <input type="radio" alt="Курсор" id="cursor" name="instruments" checked/>
-        <label for="cursor"><i class="fa fa-mouse-pointer"></i></label>
-        <input type="radio" alt="Рука" id="hand" name="instruments"/>
-        <label for="hand"><i class="fa fa-hand-paper" aria-hidden="true"></i></label>
-        <input type="radio" alt="Рисование по точкам" id="plus" name="instruments"/>
-        <label for="plus"><i class="fa fa-plus" aria-hidden="true"></i></label>
-        <input type="radio" alt="Текст" id="text" name="instruments"/>
-        <label for="text"><i class="fa fa-font" aria-hidden="true"></i></label>
-        <input type="radio" alt="Прямая" id="line" name="instruments"/>
-        <label for="line"><i class="fa fa-minus fa-lg" aria-hidden="true" style="transform: rotate(-45deg);"></i></label>
-        <ul>
-          <li>
-            <button class="button">
-              <i class="fa fa-caret-up fa-lg" aria-hidden="true" style="transform: scale(1.2, 1.2); display:block;"></i>
-              <i class="fa fa-circle" aria-hidden="true" style="transform: scale(0.7, 0.7);"></i>
-              <i class="fa fa-square" aria-hidden="true" style="transform: scale(0.7, 0.7);"></i>
-            </button>
-            <ul class="vertical-menu">
-              <input type="radio" alt="Треугольник" id="triangle" name="instruments">
-              <label for="triangle"><i class="fa fa-caret-up fa-lg" aria-hidden="true"></i><b>Треугольник</b></label>
-              <input type="radio" alt="Эллипс" id="ellipse" name="instruments">
-              <label for="ellipse"><i class="fa fa-circle" aria-hidden="true"></i><b>Эллипс</b></label>
-              <input type="radio" alt="Прямоугольник" id="rect" name="instruments">
-              <label for="rect"><i class="fa fa-square" aria-hidden="true"></i><b>Прямоугольник</b></label>
-              <input type="radio" alt="Многоугольник" id="polygon" name="instruments">
-              <label for="polygon"><i class="fa fa-star" aria-hidden="true"></i><b>Многоугольник</b></label>
-            </ul>
-          </li>
+        <ul class="vertical-menu">
+          <input type="radio" alt="Треугольник" id="triangle" name="instruments" checked>
+          <label for="triangle"><i class="fa fa-caret-up fa-lg" aria-hidden="true"></i><b>Треугольник</b></label>
+          <input type="radio" alt="Эллипс" id="ellipse" name="instruments">
+          <label for="ellipse"><i class="fa fa-circle" aria-hidden="true"></i><b>Эллипс</b></label>
+          <input type="radio" alt="Прямоугольник" id="rect" name="instruments">
+          <label for="rect"><i class="fa fa-square" aria-hidden="true"></i><b>Прямоугольник</b></label>
+          <input type="radio" alt="Многоугольник" id="polygon" name="instruments">
+          <label for="polygon"><i class="fa fa-star" aria-hidden="true"></i><b>Многоугольник</b></label>
         </ul>
-        <input type="radio" alt="Кисть" id="brush" name="instruments"/>
-        <label for="brush"><i class="fa fa-paint-brush" aria-hidden="true"></i></label>
-        <input type="radio" alt="Ластик" id="eraser" name="instruments"/>
-        <label for="eraser"><i class="fa fa-eraser" aria-hidden="true"></i></label>
-        <input type="radio" alt="Пипетка" id="pipette" name="instruments"/>
-        <label for="pipette"><i class="fa fa-thermometer-empty" aria-hidden="true" style="transform: rotate(225deg);"></i></label>
-        <input type="radio" alt="Лупа" id="zoom" name="instruments"/>
-        <label for="zoom"><i class="fa fa-search" aria-hidden="true"></i></label>
-        <button class="button"><i id="button-color" class="fa fa-square" aria-hidden="true"></i></button>
-      </div>
-      <div id="back-panel">
-        <div id="draw-panel">
-          <svg id="svg-panel" width="900" height="500">
-            <!--В этом месте будут теги svg для рисования векторной графики-->
-          </svg>
-        </div>
-      </div>
-    </main>
-    <!--Добавлять скрипты под этим комментарием-->
-    <script src="js/lib.js"></script>
-    <script src="js/handler.js"></script>
-    <script src="js/hand.js"></script>
-    <script src="js/brush.js"></script>
+      </li>
+      <li>
+        <button class="button">
+          <input type="radio" alt="Кисть" id="brush"  name="instruments"/>
+          <label for="brush"><i class="fa fa-paint-brush" style="transform: scale(1.5 ,1.5);"  aria-hidden="true"></i></label>
+        </button>
+        <ul class="brush-menu">
+          <br>
+          <b> Толщина кисти:</b>
+          <br>
+          <input oninput="changeThickness()"  type="range" id="thickness" min="4" max="30" step="2" value="10">
+          <br>
+          <br>
+          <b> Тип кисти:</b>
+          <br>
+          <input type="radio" onclick="getType('round')" id="type1" name="br" checked>
+          <label for="type1"><i class="fa fa-circle fa-lg" aria-hidden="true"></i></label>
+          <input type="radio" onclick="getType('butt')" id="type2" name="br">
+          <label for="type2"><i class="fa fa-square fa-lg" aria-hidden="true"></i></label>
+        </ul>
+      </li>
+    </ul>
+    <input type="radio" alt="Ластик" id="eraser"  name="instruments"/>
+    <label for="eraser"><i class="fa fa-eraser" aria-hidden="true"></i></label>
+    <input type="radio" alt="Пипетка" id="pipette" name="instruments"/>
+    <label for="pipette"><i class="fa fa-thermometer-empty" aria-hidden="true" style="transform: rotate(225deg);"></i></label>
+    <input type="radio" alt="Лупа" id="zoom" name="instruments"/>
+    <label for="zoom"><i class="fa fa-search" aria-hidden="true"></i></label>
+    <button class="button"><i id="button-color" class="fa fa-square" aria-hidden="true"></i></button>
+  </div>
+  <div id="back-panel">
+    <div id="draw-panel">
+      <svg id="svg-panel" width="900" height="500">
+        <!--В этом месте будут теги svg для рисования векторной графики-->
+      </svg>
+    </div>
+  </div>
+</main>
+<!--Добавлять скрипты под этим комментарием-->
+<script src="js/lib.js"></script>
+<script src="js/handler.js"></script>
+<script src="js/hand.js"></script>
+<script src="js/brush.js"></script>
 
-  </body>
+
+
+</body>
 </html>
