@@ -5,7 +5,7 @@ const instruments = [];
 
 /*ID'шники инструментов*/
 const ids = ['cursor', 'hand', 'pen', 'text',
-    'line', 'triangle', 'ellipse', 'rect',
+    'line', 'rounded-rect', 'ellipse', 'rect',
     'polygon', 'brush', 'eraser', 'pipette', 'zoom', 'button-color'];
 
 /*Текущий выбранный инструмент*/

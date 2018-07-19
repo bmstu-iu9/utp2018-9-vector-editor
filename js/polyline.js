@@ -22,14 +22,12 @@
 */
 'use strict';
 
-const RADIUS = 3; //Временная переменная
 const pen = document.getElementById('pen');
 const cursor = document.getElementById('cursor');
 
 class Polyline extends Figure {
     constructor(svgFigure) {
         super(svgFigure);
-        this.refPoints = [];
         this.tmpLine = null;
 
         this.addPoint = this.addPoint.bind(this);
@@ -40,7 +38,7 @@ class Polyline extends Figure {
         this.deletePoint = this.deletePoint.bind(this);
         this.finishByLeftPanel = this.finishByLeftPanel.bind(this);
         this.getMergeCoords = this.getMergeCoords.bind(this);
-        this.findIndex = this.findIndex.bind(this);
+        this.findIndexMerged = this.findIndexMerged.bind(this);
         this.isClosed = this.isClosed.bind(this);
         this.isStartCornerPushed = this.isStartCornerPushed.bind(this);
     }
@@ -70,7 +68,7 @@ class Polyline extends Figure {
         }
         const [point, merged] = this.getMergeCoords(event);
         if (this.refPoints.length > 2 && this.refPoints[0].equals(point)) {
-            const refp = new PolylinePoint(this, point, RADIUS);
+            const refp = new PolylinePoint(this, point);
             this.svgFig.points.appendItem(RefPoint.createSVGPoint(point));
             refp.svgPoint = this.svgFig.points[this.svgFig.points.numberOfItems - 1];
             this.refPoints.push(refp);
@@ -78,7 +76,7 @@ class Polyline extends Figure {
         } else if (merged) {
             return;
         } else {
-            const refp = new PolylinePoint(this, point, RADIUS);
+            const refp = new PolylinePoint(this, point);
             this.svgFig.points.appendItem(RefPoint.createSVGPoint(point));
             refp.svgPoint = this.svgFig.points[this.svgFig.points.numberOfItems - 1];
             svgPanel.appendChild(refp.circle);
@@ -98,12 +96,11 @@ class Polyline extends Figure {
     }
 
     showRefPoints() {
-        const len = this.refPoints.length;
-        for (let i = 0; i < len - 1; i++) {
+        for (let i = 0; i < this.refPoints.length - 1; i++) {
             svgPanel.appendChild(this.refPoints[i].circle);
         }
         if (!this.isClosed()) {
-            svgPanel.appendChild(this.refPoints[len - 1].circle);
+            svgPanel.appendChild(this.refPoints[this.refPoints.length - 1].circle);
         }
     }
 
@@ -127,32 +124,7 @@ class Polyline extends Figure {
         delete this.tmpLine;
         this.finished = true;
         someFigureTaken = false;
-
-        let isShowing = (this.refPoints.length != 1) ? true : false;
-        const check = ( () => cursor.checked && !this.somePointTaken && !someFigureTaken ).bind(this);
-        const hide = ( () => {
-            if ((check() || pen.checked) && isShowing) {
-                this.hideRefPoints();
-                isShowing = false;
-            }
-        } ).bind(this);
-        drawPanel.addEventListener('click', hide);
-        this.svgFig.addEventListener('click', ( () => {
-            if (check() && !isShowing) {
-                this.showRefPoints();
-                isShowing = true;
-            }
-        } ).bind(this));
-        this.svgFig.addEventListener('mouseover', () => {
-            if (check()) {
-                drawPanel.removeEventListener('click', hide);
-            }
-        });
-        this.svgFig.addEventListener('mouseout', () => {
-            if (check()) {
-                drawPanel.addEventListener('click', hide);
-            }
-        });
+        this.hideOrShow((this.refPoints.length != 1) ? true : false, pen);
     }
 
     takePoint(event) {
@@ -160,10 +132,10 @@ class Polyline extends Figure {
             return;
         }
 
-        const ind = this.findIndex(this.getMergeCoords(event)[0]);
+        const ind = this.findIndexMerged(getMouseCoords(event));
         const iSCP = this.isStartCornerPushed(ind);
 
-        const movePoint = ( (e) => {
+        const movePoint = (e) => {
             const coords = getMouseCoords(e);
             this.refPoints[ind].circle.setAttribute('fill', '#0000FF');
             if (iSCP) {
@@ -172,10 +144,10 @@ class Polyline extends Figure {
             } else {
                 this.refPoints[ind].setCoords(coords);
             }
-        } ).bind(this);
+        };
 
-        const fixPoint = ( (e) => {
-            const clicked = this.findIndex(this.getMergeCoords(e)[0], ind);
+        const fixPoint = (e) => {
+            const clicked = this.findIndexMerged(getMouseCoords(e), ind);
             if (clicked !== undefined && !iSCP) {
                 return;
             }
@@ -185,15 +157,15 @@ class Polyline extends Figure {
             this.refPoints[ind].circle.addEventListener('contextmenu', this.deletePoint);
             this.refPoints[ind].circle.removeEventListener('click', fixPoint);
             leftPanel.removeEventListener('click', stopMovingByLeftPanel);
-        } ).bind(this);
+        };
 
-        const stopMovingByLeftPanel = ( () => {
+        const stopMovingByLeftPanel = () => {
             if (cursor.checked && this.somePointTaken) {
                 movePoint(event);
                 this.refPoints[ind].circle.dispatchEvent(event);
                 this.refPoints[ind].circle.dispatchEvent(new Event('mouseout'));
             }
-        } ).bind(this);
+        };
 
         this.somePointTaken = someFigureTaken = true;
         document.addEventListener('mousemove', movePoint);
@@ -208,7 +180,7 @@ class Polyline extends Figure {
             return;
         }
         event.preventDefault();
-        let ind = this.findIndex(this.getMergeCoords(event)[0]);
+        let ind = this.findIndexMerged(getMouseCoords(event));
         const iSCP = this.isStartCornerPushed(ind);
         if (ind === undefined) {
             return;
@@ -218,7 +190,7 @@ class Polyline extends Figure {
         this.refPoints.splice(ind, 1);
         if (iSCP) {
             this.svgFig.points.removeItem(this.svgFig.points.numberOfItems - 1);
-            this.refPoints[this.refPoints.length - 1] = new PolylinePoint(this, this.refPoints[0], RADIUS);
+            this.refPoints[this.refPoints.length - 1] = new PolylinePoint(this, this.refPoints[0]);
             this.svgFig.points.appendItem(RefPoint.createSVGPoint(this.refPoints[0]));
             this.refPoints[this.refPoints.length - 1].svgPoint = this.svgFig.points[this.svgFig.points.numberOfItems - 1];
         }
@@ -227,29 +199,12 @@ class Polyline extends Figure {
             svgPanel.removeChild(this.refPoints[0].circle);
             this.svgFig.points.removeItem(0);
             svgPanel.removeChild(this.svgFig);
-            this.refPoints = 0;
+            this.refPoints = undefined;
         } else if (this.refPoints.length == 3 && this.isClosed()) {
             this.svgFig.points.removeItem(2);
             this.refPoints.splice(2, 1);
         }
-    }
-
-    getMergeCoords(event) {
-        const click = getMouseCoords(event);
-        for (let i = 0; i < this.refPoints.length; i++) {
-            if (this.refPoints[i].containsToArea(click)) {
-                return [this.refPoints[i], true];
-            }
-        }
-        return [click, false];
-    }
-
-    findIndex(point, miss = -1) {
-        for (let i = 0; i < this.refPoints.length; i++) {
-            if (i != miss && this.refPoints[i].equals(point)) {
-                return i;
-            }
-        }
+        this.svgFig.dispatchEvent(new Event('mouseout'));
     }
 
     isClosed() {
@@ -284,36 +239,18 @@ class Polyline extends Figure {
 }
 
 class PolylinePoint extends RefPoint {
-    constructor(figure, coords, r) {
-        super(figure, coords, r);
+    constructor(polyline, coords) {
+        super(polyline, coords, 3, pen);
         this.svgPoint = null;
 
-        this.circle.addEventListener('mouseover', this.dispatchAndColor.bind(this, 'mouseover', '#0000FF'));
-        this.circle.addEventListener('mouseout', this.dispatchAndColor.bind(this, 'mouseout', '#FFFFFF'));
         this.circle.addEventListener('click', this.figure.takePoint);
         this.circle.addEventListener('contextmenu', this.figure.deletePoint);
-    }
-
-    dispatchAndColor(event, color) {
-        if ( (pen.checked && (!this.figure.someFigureTaken || !this.figure.finished) ) ||
-            (cursor.checked && !someFigureTaken) ) {
-            this.figure.svgFig.dispatchEvent(new Event(event));
-            this.circle.setAttribute('fill', color);
-        }
     }
 
     setCoords(coords) {
         this.x = this.svgPoint.x = coords.x;
         this.y = this.svgPoint.y = coords.y;
     }
-
-    set x(v) { this.circle.setAttribute('cx', this.svgPoint.x = v); }
-    set y(v) { this.circle.setAttribute('cy', this.svgPoint.y = v); }
-    set r(v) { this.circle.setAttribute('r', r); }
-    get x() { return this.circle.getAttribute('cx'); }
-    get y() { return this.circle.getAttribute('cy'); }
-    get r() { return this.circle.getAttribute('r'); }
 }
 
-Polyline.draw = Polyline.draw.bind(Polyline)
-drawPanel.addEventListener('click', Polyline.draw);
+drawPanel.addEventListener('click', Polyline.draw = Polyline.draw.bind(Polyline));
