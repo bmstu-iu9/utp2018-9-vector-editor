@@ -151,6 +151,7 @@ class Polyline extends Figure {
             if (clicked !== undefined && !iSCP) {
                 return;
             }
+            this.deleteTmpCopy();
             this.somePointTaken = someFigureTaken = false;
             document.removeEventListener('mousemove', movePoint);
             this.refPoints[ind].circle.addEventListener('click', this.takePoint);
@@ -167,6 +168,7 @@ class Polyline extends Figure {
             }
         };
 
+        this.createTmpCopy(ind);
         this.somePointTaken = someFigureTaken = true;
         document.addEventListener('mousemove', movePoint);
         this.refPoints[ind].circle.removeEventListener('click', this.takePoint);
@@ -235,6 +237,25 @@ class Polyline extends Figure {
 
     moveTmpLine(event) {
         this.moveEndOfTmpLine(getMouseCoords(event));
+    }
+
+    createTmpCopy(indOfTaken) {
+        this.copy = createSVGElem('polyline', 'none', '#000000', '1', '0.5', '0.5');
+        svgPanel.insertBefore(this.copy, this.svgFig);
+
+        const appendAll = (...inds) => {
+            inds.forEach(i => this.copy.points.appendItem(this.svgFig.points[i]));
+        };
+
+        if (indOfTaken > 0 && indOfTaken < this.refPoints.length - 1) {
+            appendAll(indOfTaken - 1, indOfTaken, indOfTaken + 1);
+        } else if (this.isClosed()) {
+            appendAll(1, 0, this.refPoints.length - 2);
+        } else if (indOfTaken == 0) {
+            appendAll(0, 1);
+        } else {
+            appendAll(this.refPoints.length - 1, this.refPoints.length - 2);
+        }
     }
 }
 

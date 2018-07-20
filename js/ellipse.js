@@ -67,11 +67,6 @@ class Ellipse extends Figure {
         svgPanel.insertBefore(this.copy, this.svgFig);
     }
 
-    deleteTmpCopy() {
-        svgPanel.removeChild(this.copy);
-        delete this.copy;
-    }
-
     set x(v) { this.svgFig.setAttribute('cx', v); }
     set y(v) { this.svgFig.setAttribute('cy', v); }
     set rx(v) { this.svgFig.setAttribute('rx', v); }

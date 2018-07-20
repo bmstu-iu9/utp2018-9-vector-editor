@@ -56,6 +56,13 @@ class Figure {
             }
         });
     }
+
+    createTmpCopy() {}
+
+    deleteTmpCopy() {
+        svgPanel.removeChild(this.copy);
+        delete this.copy;
+    }
 }
 
 class RefPoint {

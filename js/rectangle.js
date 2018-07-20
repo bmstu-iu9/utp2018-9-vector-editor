@@ -218,11 +218,6 @@ class Rectangle extends Figure {
         svgPanel.insertBefore(this.copy, this.svgFig);
     }
 
-    deleteTmpCopy() {
-        svgPanel.removeChild(this.copy);
-        delete this.copy;
-    }
-
     get x() { return +this.svgFig.getAttribute('x'); }
     get y() { return +this.svgFig.getAttribute('y'); }
     get r() { return +this.svgFig.getAttribute('rx'); }
