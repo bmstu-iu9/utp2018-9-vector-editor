@@ -26,14 +26,12 @@ class Figure {
         }
     }
 
-    hideRefPoints() {}
-    showRefPoints() {}
-
-    hideOrShow(isShowing, instrument) {
+    hideOrShow(isShowing, instrument, hideHelper = () => {}, showHelper = () => {}) {
         let count = instrument == pen ? 1 : 0;
         const check = ( () => this !== undefined && !this.somePointTaken && !someFigureTaken ).bind(this);
         const hide = ( () => {
             if (count > 0 && isShowing && this.refPoints !== undefined) {
+                hideHelper();
                 this.hideRefPoints();
                 isShowing = false;
             }
@@ -42,6 +40,7 @@ class Figure {
         drawPanel.addEventListener('click', hide);
         this.svgFig.addEventListener('click', ( () => {
             if (check() && !isShowing) {
+                showHelper();
                 this.showRefPoints();
                 isShowing = true;
             }
@@ -96,7 +95,7 @@ class RefPoint {
 
     set x(v) { this.circle.setAttribute('cx', v); }
     set y(v) { this.circle.setAttribute('cy', v); }
-    set r(v) { this.circle.setAttribute('r', r); }
+    set r(v) { this.circle.setAttribute('r', v); }
     get x() { return +this.circle.getAttribute('cx'); }
     get y() { return +this.circle.getAttribute('cy'); }
     get r() { return +this.circle.getAttribute('r'); }
