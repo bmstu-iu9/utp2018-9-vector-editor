@@ -32,13 +32,20 @@ class Rectangle extends Figure {
         if (!rect.checked && !roundedRect.checked) {
             return;
         }
-        const click = getMouseCoords(event);
-        const rectangle = new Rectangle(createSVGElem('rect', 'none'), currentInstrument);
+        let click = getMouseCoords(event);
+        const rectangle = new Rectangle(createSVGElem('rect', 'none', undefined, '3'), currentInstrument);
+        ({ x: rectangle.x, y: rectangle.y } = click);
         if (roundedRect.checked) {
             rectangle.r = RADIUS;
         }
         svgPanel.appendChild(rectangle.svgFig);
-        const moveRect = (e) => rectangle.moveByAngeles(click, getMouseCoords(e));
+        const moveRect = (e) => {
+            const current = getMouseCoords(e);
+            if (e.altKey) {
+                click = rectangle.getSymmetrical(current);
+            }
+            rectangle.moveByAngeles(click, current);
+        }
         document.addEventListener('mousemove', moveRect);
         const stopMoving = () => {
             document.removeEventListener('mousemove', moveRect);

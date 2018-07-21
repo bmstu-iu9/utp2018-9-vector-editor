@@ -48,7 +48,7 @@ class Polyline extends Figure {
             return;
         }
         const clickCoord = getMouseCoords(event);
-        const pl = new Polyline(createSVGElem('polyline', 'none'));
+        const pl = new Polyline(createSVGElem('polyline', 'none', undefined, '3'));
         pl.createTmpLine(clickCoord);
         svgPanel.appendChild(pl.svgFig);
         svgPanel.appendChild(pl.tmpLine);

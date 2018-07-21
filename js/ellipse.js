@@ -15,12 +15,17 @@ class Ellipse extends Figure {
         if (!ellipse.checked) {
             return;
         }
-        const click = getMouseCoords(event);
-        const ell = new Ellipse(createSVGElem('ellipse', 'none'));
+        let click = getMouseCoords(event);
+        const ell = new Ellipse(createSVGElem('ellipse', 'none', undefined, '3'));
         svgPanel.appendChild(ell.svgFig);
+        ({ x: ell.rect.x, y: ell.rect.y } = click);
 
         const moveEllipse = (e) => {
-            ell.rect.moveByAngeles(click, getMouseCoords(e));
+            const current = getMouseCoords(e);
+            if (e.altKey) {
+                click = ell.rect.getSymmetrical(current);
+            }
+            ell.rect.moveByAngeles(click, current);
             ell.synchronizeWithRect();
         };
 
