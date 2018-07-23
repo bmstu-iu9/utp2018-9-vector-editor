@@ -51,7 +51,6 @@ class Ellipse extends Figure {
 
             ell.rect.createTmpCopy = ell.createTmpCopy.bind(ell);
             ell.rect.deleteTmpCopy = ell.deleteTmpCopy.bind(ell);
-
         };
 
         document.addEventListener('mousemove', moveEllipse);

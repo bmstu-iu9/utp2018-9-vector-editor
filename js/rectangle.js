@@ -17,7 +17,6 @@ class Rectangle extends Figure {
         super(svgFigure);
 
         this.center = new RectPoint(this, { x: 0, y: 0}, kindOfRect);
-        this.center.circle.onclick = null;
         this.center.circle.onmousedown = this.moveRect.bind(this);
 
         for (let i = 0; i < 8; i++) {
