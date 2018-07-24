@@ -56,10 +56,12 @@ const e = (path, x, y) => {
     index = -1;
     return;
   }
-  if (pathLength(path.slice(0, l + 2)) < 5) {
+  console.log(pl(path.slice(0, l),x,y)+'  !!!!!!');
+  console.log(pathLength(path.slice(0, l+2))+'  2222');
+  if (pl(path.slice(0, l+2),x,y) < 5) {
     strt = 1;
     console.log('START');
-  } else if (dist(x, y, path[path.length - 2], path[path.length - 1]) < 5) {
+  } else if (pr(path.slice(r, path.length),x,y) < 5) {
     end = 1;
     console.log('END');
   }
@@ -87,6 +89,26 @@ const pathLength=(path) => {
   return l;
 };
 
+const pl=(path,x,y) => {
+  let l = 0;
+
+  path.push(x,y);
+  console.log(path.length );
+  for (let i = 0; i < path.length - 3; i += 2) {
+    l += dist(path[i], path[i + 1], path[i + 2], path[i + 3]);
+    console.log('pl  '+l);
+  }
+  return l;
+};
+
+const pr=(path,x,y) => {
+  let l = 0;
+  path.unshift(x,y);
+  for (let i = 0; i < path.length - 3; i += 2) {
+    l += dist(path[i], path[i + 1], path[i + 2], path[i + 3]);
+  }
+  return l;
+};
 
 const erase = (event) => {
   strt = 0;
