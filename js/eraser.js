@@ -22,11 +22,9 @@ const parseP = (x, y, path) => {
   index = -1;
   end = 0;
   strt = 0;
-  console.log('ERASING');
   for (let i = 0; i + 2 < path.length;) {
     if (((x >= (path[i] - 1) && x <= (path[i + 2] + 1)) || (x <= (path[i] + 1) && x >= (path[i + 2] - 1))) &&
       ((y >= (path[i + 1] - 1) && y <= (path[i + 3] + 1)) || (y <= (path[i + 1] + 1) && y >= (path[i + 3] - 1)))) {
-      console.log(i);
       index = i;
       break;
     }
@@ -52,21 +50,15 @@ const e = (path, x, y) => {
   let k;
   if (pathLength(path) < 10) {
     currentPath.remove();
-    console.log('removal');
     index = -1;
     return;
   }
-  console.log(pl(path.slice(0, l),x,y)+'  !!!!!!');
-  console.log(pathLength(path.slice(0, l+2))+'  2222');
   if (pl(path.slice(0, l+2),x,y) < 5) {
     strt = 1;
-    console.log('START');
   } else if (pr(path.slice(r, path.length),x,y) < 5) {
     end = 1;
-    console.log('END');
   }
   let dis = dist(x, y, path[l], path[l + 1]);
-  console.log(l + ' ' + r);
   let dis1 = dist(path[l], path[l + 1], path[r], path[r + 1]);
   if (strt === 1) {
     dis = dist(x, y, path[r], path[r + 1]);
@@ -93,10 +85,8 @@ const pl=(path,x,y) => {
   let l = 0;
 
   path.push(x,y);
-  console.log(path.length );
   for (let i = 0; i < path.length - 3; i += 2) {
     l += dist(path[i], path[i + 1], path[i + 2], path[i + 3]);
-    console.log('pl  '+l);
   }
   return l;
 };
