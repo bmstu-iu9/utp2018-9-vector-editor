@@ -2,7 +2,7 @@
 
 let shape,x,y,path;
 let isDrawing=false;
-let color='red',width,linecap,linejoin,miterlimit;
+let color='black',width,linecap,linejoin,miterlimit;
 const brsh = document.getElementById('brush');
 
   const changeThickness = ()=>{
