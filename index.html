@@ -36,6 +36,7 @@
     <label for="plus"><i class="fa fa-plus" aria-hidden="true"></i></label>
     <input type="radio" alt="Текст" id="text" name="instruments"/>
     <label for="text"><i class="fa fa-font" aria-hidden="true"></i></label>
+
     <input type="radio" alt="Прямая" id="line" name="instruments"/>
     <label for="line"><i class="fa fa-minus fa-lg" aria-hidden="true" style="transform: rotate(-45deg);"></i></label>
     <ul>
@@ -56,28 +57,26 @@
           <label for="polygon"><i class="fa fa-star" aria-hidden="true"></i><b>Многоугольник</b></label>
         </ul>
       </li>
-      <li>
+      </ul>
+    <ul>
+    <li>
         <button class="button">
           <input type="radio" alt="Кисть" id="brush"  name="instruments"/>
           <label for="brush"><i class="fa fa-paint-brush" style="transform: scale(1.5 ,1.5);"  aria-hidden="true"></i></label>
         </button>
         <ul class="brush-menu">
-          <br>
-          <b> Толщина кисти:</b>
-          <br>
-          <input oninput="changeThickness()"  type="range" id="thickness" min="4" max="30" step="2" value="10">
-          <br>
-          <br>
-          <b> Тип кисти:</b>
-          <br>
+          <strong>Толщина кисти:  <input oninput="changeThickness()"  type="range" id="thickness" min="2" max="20" step="2" value="10"></strong>
+          <hr>
+          <strong>Тип кисти:<br>
           <input type="radio" onclick="getType('round')" id="type1" name="br" checked>
           <label for="type1"><i class="fa fa-circle fa-lg" aria-hidden="true"></i></label>
-          <input type="radio" onclick="getType('butt')" id="type2" name="br">
-          <label for="type2"><i class="fa fa-square fa-lg" aria-hidden="true"></i></label>
+            <input type="radio" onclick="getType('butt')" id="type2" name="br">
+            <label for="type2"><i class="fa fa-square fa-lg" aria-hidden="true"></i></label></strong>
+
         </ul>
       </li>
     </ul>
-    <input type="radio" alt="Ластик" id="eraser"  name="instruments"/>
+    <input type="radio" alt="Ластик" id="eraser"  name="instruments" checked/>
     <label for="eraser"><i class="fa fa-eraser" aria-hidden="true"></i></label>
     <input type="radio" alt="Пипетка" id="pipette" name="instruments"/>
     <label for="pipette"><i class="fa fa-thermometer-empty" aria-hidden="true" style="transform: rotate(225deg);"></i></label>
@@ -88,7 +87,6 @@
   <div id="back-panel">
     <div id="draw-panel">
       <svg id="svg-panel" width="900" height="500">
-        <!--В этом месте будут теги svg для рисования векторной графики-->
       </svg>
     </div>
   </div>
@@ -98,7 +96,7 @@
 <script src="js/handler.js"></script>
 <script src="js/hand.js"></script>
 <script src="js/brush.js"></script>
-
+<script src="js/eraser.js"></script>
 
 
 </body>
