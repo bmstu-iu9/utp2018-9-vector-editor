@@ -48,8 +48,6 @@ main {
 }
 
 
-
-
 input[type="radio"] + label {
   width: 45px;
   height: 45px;
@@ -120,7 +118,7 @@ main li ul {
   position: absolute;
   left: 47px;
   top: 0;
-  width: auto;
+  width: 160px;
   display: block;
   opacity: 0;
   visibility: hidden;
@@ -137,7 +135,22 @@ main li ul {
   background-color: #06121b;
 }
 
+.brush-menu strong {
+  width: auto;
+  background-color: #06121b ;
+  height: 50px;
+  display: block;
+  padding: 10px;
+  border-radius: 5px;
+}
 
+.brush-menu strong:hover {
+  background-color: #144871;
+}
+
+.brush-menu input[type="radio"]:hover + label {
+  background-color: #144871;
+}
 
 main li:focus-within ul {
   visibility: visible;
@@ -168,15 +181,18 @@ main li:focus-within ul {
 
 
 .brush-menu input[type="radio"] + label {
-  width: auto;
+  width: 0px;
   float: left;
-  margin: 5px;
-  background-color:#144871 ;
-  height: auto;
+  margin: 10px 25px 10px 25px;
+  background-color:mediumblue ;
+  height: 0px;
   display: block;
-  padding: 10px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.brush-menu input[type="radio"]:checked + label {
+  color: deepskyblue;
 }
 
 .brush-menu input[type="radio"]:hover + label {
