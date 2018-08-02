@@ -201,10 +201,10 @@ class Rectangle extends Figure {
         let x, y, width, height;
         if (horizontal) {
             const left = (fixed.x < moving.x) ? fixed : moving;
-            [x, y, width, height] = [left.x, fixed.y - this.height/2, Math.abs(fixed.x - moving.x), this.height];
+            [x, y, width, height] = [left.x, this.y, Math.abs(fixed.x - moving.x), this.height];
         } else {
             const upper = (fixed.y < moving.y) ? fixed : moving;
-            [x, y, width, height] = [fixed.x - this.width/2, upper.y, this.width, Math.abs(fixed.y - moving.y)];
+            [x, y, width, height] = [this.x, upper.y, this.width, Math.abs(fixed.y - moving.y)];
         }
         return [x, y, width, height];
     }
