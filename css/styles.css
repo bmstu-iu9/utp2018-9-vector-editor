@@ -163,3 +163,89 @@ main li:focus-within ul {
   margin-left: 5px;
   color: #05b5b5;
 }
+.selector {
+    margin: auto 0px auto 10px;
+    display: flex;
+    height: 25px;
+    background-color: #05b5b5;
+    border-radius: 10px;
+    justify-content: flex-end;
+}
+.selector-label {
+    margin: auto 0 auto 10px;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    font-size: 10pt;
+}
+.selector-field {
+    margin: auto 0 auto 5px;
+    height: 25px;
+    border: none;
+    background-color: #009898;
+    color: #fff;
+    text-align: right;
+    font-size: 10pt;
+    padding: 0 10px 0 10px;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+}
+.selector-button {
+    margin: auto 0 auto 0;
+    height: 25px;
+    width: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    border-radius: 0 10px 10px 0;
+}
+.selector-button:hover {
+    background-color: #0cd8d8;
+}
+.selector-button:active {
+    background-color: #009898;
+}
+.selector-ul {
+    position: absolute;
+    top: 40px;
+    background-color: #005b86;
+    border-radius: 5px;
+    text-align: right;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+.selector-li {
+    color: #fff;
+    padding: 5px 10px;
+    transition: 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    font-size: 10pt;
+}
+.selector-li:hover {
+    background-color: #0077af;
+}
+.selector button:focus + ul {
+    visibility: visible;
+    opacity: 1;
+}
+header div {
+    display: flex;
+}
+#options {
+    /* margin: auto; */
+}
+.show-option {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#options > div {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 10px;
+    right: 100px;
+}
