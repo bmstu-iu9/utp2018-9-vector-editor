@@ -4,10 +4,10 @@
 let eraser = document.getElementById('eraser');
 let isErasing = false;
 
-let end, strt;
+let end, strt,type;
 let index = 0, Path1, Path2, currentPath;
 
-const startErasing = (event) => {
+const startErasing = () => {
   if (!eraser.checked)
     return;
   isErasing = true;
@@ -83,7 +83,6 @@ const pathLength=(path) => {
 
 const pl=(path,x,y) => {
   let l = 0;
-
   path.push(x,y);
   for (let i = 0; i < path.length - 3; i += 2) {
     l += dist(path[i], path[i + 1], path[i + 2], path[i + 3]);
@@ -106,6 +105,10 @@ const erase = (event) => {
   if (isErasing) {
     if (event.target.toString() === '[object SVGPathElement]') {
       currentPath = event.target;
+      color = event.target.getAttribute('stroke');
+      width = event.target.getAttribute('stroke-width');
+      type = event.target.getAttribute('stroke-linecap');
+      linejoin = event.target.getAttribute('stroke-linejoin');
       parseP(getMouseCoords(event).x, getMouseCoords(event).y, event.target.getAttribute('d').split(' ').map(Number).filter(Boolean));
       if (index !== -1) {
         currentPath.remove();
@@ -113,8 +116,8 @@ const erase = (event) => {
           shape = document.createElementNS(svgNS, "path");
           shape.setAttribute('fill', 'none');
           shape.setAttribute('stroke-width', width);
-          shape.setAttribute('stroke', 'black');
-          shape.setAttribute('stroke-linecap', 'round');
+          shape.setAttribute('stroke', color);
+          shape.setAttribute('stroke-linecap', type);
           shape.setAttribute('stroke-linejoin', linejoin);
           shape.setAttribute('d', Path1);
           svgPanel.appendChild(shape);
@@ -123,8 +126,8 @@ const erase = (event) => {
           shape = document.createElementNS(svgNS, "path");
           shape.setAttribute('fill', 'none');
           shape.setAttribute('stroke-width', width);
-          shape.setAttribute('stroke', 'black');
-          shape.setAttribute('stroke-linecap', 'round');
+          shape.setAttribute('stroke', color);
+          shape.setAttribute('stroke-linecap', type);
           shape.setAttribute('stroke-linejoin', linejoin);
           shape.setAttribute('d', Path2);
           svgPanel.appendChild(shape);
@@ -135,7 +138,7 @@ const erase = (event) => {
 };
 
 
-function stopErasing(event) {
+function stopErasing() {
   isErasing = false;
 }
 
