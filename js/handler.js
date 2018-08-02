@@ -6,7 +6,7 @@ const instruments = [];
 /*ID'шники инструментов*/
 const ids = ['cursor', 'hand', 'pen', 'text',
     'line', 'rounded-rect', 'ellipse', 'rect',
-    'polygon', 'brush', 'eraser', 'pipette', 'zoom', 'button-color'];
+    'polygon', 'brush', 'eraser', 'pipette', 'zoom'];
 
 /*Текущий выбранный инструмент*/
 let currentInstrument;
@@ -24,4 +24,5 @@ for (let i = 0; i < ids.length; i++) {
     instruments[i] = document.getElementById(ids[i]);
     instruments[i].addEventListener('click', function() { currentInstrument = this; });
     instruments[i].addEventListener('click', changeLabelSelected);
+    instruments[i].addEventListener("click", showOptions);
 }
