@@ -32,8 +32,8 @@
         <label for="cursor"><i class="fa fa-mouse-pointer"></i></label>
         <input type="radio" alt="Рука" id="hand" name="instruments"/>
         <label for="hand"><i class="fa fa-hand-paper" aria-hidden="true"></i></label>
-        <input type="radio" alt="Рисование по точкам" id="plus" name="instruments"/>
-        <label for="plus"><i class="fa fa-plus" aria-hidden="true"></i></label>
+        <input type="radio" alt="Перо" id="pen" name="instruments"/>
+        <label for="pen"><i class="fas fa-pen-fancy" aria-hidden="true"></i></label>
         <input type="radio" alt="Текст" id="text" name="instruments"/>
         <label for="text"><i class="fa fa-font" aria-hidden="true"></i></label>
         <input type="radio" alt="Прямая" id="line" name="instruments"/>
@@ -46,14 +46,14 @@
               <i class="fa fa-square" aria-hidden="true" style="transform: scale(0.7, 0.7);"></i>
             </button>
             <ul class="vertical-menu">
-              <input type="radio" alt="Треугольник" id="triangle" name="instruments">
-              <label for="triangle"><i class="fa fa-caret-up fa-lg" aria-hidden="true"></i><b>Треугольник</b></label>
+              <input type="radio" alt="Прямоугольник" id="rect" name="instruments">
+              <label for="rect"><i class="fas fa-square-full" aria-hidden="true"></i><b>Прямоугольник</b></label>
+              <input type="radio" alt="Округленный прямоугольник" id="rounded-rect" name="instruments">
+              <label for="rounded-rect"><i class="fas fa-square" aria-hidden="true"></i><b>Округленный прямоугольник</b></label>
               <input type="radio" alt="Эллипс" id="ellipse" name="instruments">
               <label for="ellipse"><i class="fa fa-circle" aria-hidden="true"></i><b>Эллипс</b></label>
-              <input type="radio" alt="Прямоугольник" id="rect" name="instruments">
-              <label for="rect"><i class="fa fa-square" aria-hidden="true"></i><b>Прямоугольник</b></label>
               <input type="radio" alt="Многоугольник" id="polygon" name="instruments">
-              <label for="polygon"><i class="fa fa-star" aria-hidden="true"></i><b>Многоугольник</b></label>
+              <label for="polygon"><i class="fas fa-star" aria-hidden="true"></i><b>Многоугольник</b></label>
             </ul>
           </li>
         </ul>
@@ -79,5 +79,12 @@
     <script src="js/lib.js"></script>
     <script src="js/handler.js"></script>
     <script src="js/hand.js"></script>
+    <script src="js/Figure.js"></script>
+    <script src="js/polyline.js"></script>
+    <script src="js/rectangle.js"></script>
+    <script src="js/ellipse.js"></script>
+    <script src="js/polygon.js"></script>
+    <script src="js/brush.js"></script>
+    <script src="js/eraser.js"></script>
   </body>
 </html>
