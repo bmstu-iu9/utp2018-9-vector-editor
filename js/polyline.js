@@ -48,7 +48,8 @@ class Polyline extends Figure {
             return;
         }
         const clickCoord = getMouseCoords(event);
-        const pl = new Polyline(createSVGElem('polyline', 'none', undefined, '3'));
+        const options = optionsPen.getElementsByTagName('input');
+        const pl = new Polyline(createSVGElem('polyline', 'none', undefined, options[0].value));
         pl.createTmpLine(clickCoord);
         svgPanel.appendChild(pl.svgFig);
         svgPanel.appendChild(pl.tmpLine);
@@ -261,7 +262,7 @@ class Polyline extends Figure {
 
 class PolylinePoint extends RefPoint {
     constructor(polyline, coords) {
-        super(polyline, coords, 3, pen);
+        super(polyline, coords, pen);
         this.svgPoint = null;
 
         this.circle.addEventListener('click', this.figure.takePoint);

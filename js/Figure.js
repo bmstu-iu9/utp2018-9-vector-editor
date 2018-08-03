@@ -26,8 +26,8 @@ class Figure {
         }
     }
 
-    hideOrShow(isShowing, instrument, hideHelper = () => {}, showHelper = () => {}) {
-        let count = instrument == pen ? 1 : 0;
+    hideOrShow(isShowing, instrument, hideHelper = () => {}, showHelper = () => {}, fast = false) {
+        let count = (instrument == pen || fast) ? 1 : 0;
         const check = ( () => this !== undefined && !this.somePointTaken && !someFigureTaken ).bind(this);
         const hide = ( () => {
             if (count > 0 && isShowing && this.refPoints !== undefined) {
@@ -66,10 +66,10 @@ class Figure {
 }
 
 class RefPoint {
-    constructor(figure, coords, r, instrument) {
+    constructor(figure, coords, instrument) {
         this.figure = figure;
         this.circle = createSVGElem('circle');
-        this.circle.setAttribute('r', r);
+        this.circle.setAttribute('r', 3);
         this.circle.setAttribute('cx', coords.x);
         this.circle.setAttribute('cy', coords.y);
 
@@ -85,7 +85,7 @@ class RefPoint {
     }
 
     dispatchAndColor(event, color, instrument) {
-        if ( (instrument.checked && (!this.figure.someFigureTaken || !this.figure.finished) ) ||
+        if ( (instrument.checked && (someFigureTaken || !this.figure.finished) ) ||
             (cursor.checked && !someFigureTaken) ) {
             this.figure.svgFig.dispatchEvent(new Event(event));
             this.circle.setAttribute('fill', color);

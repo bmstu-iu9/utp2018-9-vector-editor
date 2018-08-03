@@ -7,8 +7,6 @@
 */
 'use strict';
 
-var RADIUS = 10; //Временная переменная
-
 const rect = document.getElementById('rect');
 const roundedRect = document.getElementById('rounded-rect');
 
@@ -31,28 +29,53 @@ class Rectangle extends Figure {
         if (!rect.checked && !roundedRect.checked) {
             return;
         }
+
         let click = getMouseCoords(event);
-        const rectangle = new Rectangle(createSVGElem('rect', 'none', undefined, '3'), currentInstrument);
+        let moving = false;
+        const options = (currentInstrument == rect ? optionsRect : optionsRoundedRect).getElementsByTagName('input');
+        const rectangle = new Rectangle(createSVGElem('rect', 'none', undefined, options[0].value), currentInstrument);
         ({ x: rectangle.x, y: rectangle.y } = click);
         if (roundedRect.checked) {
-            rectangle.r = RADIUS;
+            rectangle.r = options[1].value;
         }
         svgPanel.appendChild(rectangle.svgFig);
+
+        if (event.ctrlKey) {
+            if (roundedRect.checked) {
+                rectangle.height = options[2].value;
+                rectangle.width = options[3].value;
+            } else {
+                rectangle.height = options[1].value;
+                rectangle.width = options[2].value;
+            }
+            rectangle.updateRefPointsCoords();
+            rectangle.hideOrShow(true, currentInstrument, undefined, undefined, true);
+            rectangle.showRefPoints();
+            return;
+        }
+
         const moveRect = (e) => {
+            moving = true;
             const current = getMouseCoords(e);
             if (e.altKey) {
                 click = rectangle.getSymmetrical(current);
             }
             rectangle.moveByAngeles(click, current);
-        }
-        document.addEventListener('mousemove', moveRect);
+        };
+
         const stopMoving = () => {
             document.removeEventListener('mousemove', moveRect);
             drawPanel.removeEventListener('mouseup', stopMoving);
+            if (!moving) {
+                svgPanel.removeChild(rectangle.svgFig);
+                return;
+            }
             rectangle.updateRefPointsCoords();
             rectangle.hideOrShow(true, currentInstrument);
             rectangle.showRefPoints();
         };
+
+        document.addEventListener('mousemove', moveRect);
         drawPanel.addEventListener('mouseup', stopMoving);
     }
 
@@ -70,7 +93,7 @@ class Rectangle extends Figure {
         const pushed = { x: this.refPoints[ind].x, y: this.refPoints[ind].y };
         let fixed = { x: this.refPoints[symInd].x, y: this.refPoints[symInd].y };
         const [horizontal, angelPushed] = [pushed.y == fixed.y, !(pushed.y == fixed.y || pushed.x == fixed.x)];
-
+        
         const movePoint = ( (e) => {
             const coords = getMouseCoords(e);
             if (angelPushed) {
@@ -243,7 +266,7 @@ class Rectangle extends Figure {
 
 class RectPoint extends RefPoint {
     constructor(rectangle, coords, kindOfRect) {
-        super(rectangle, coords, 3, kindOfRect);
+        super(rectangle, coords, kindOfRect);
 
         this.circle.addEventListener('mousedown', this.figure.takePoint.bind(this.figure));
     }

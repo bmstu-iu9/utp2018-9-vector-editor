@@ -15,23 +15,15 @@ class Ellipse extends Figure {
         if (!ellipse.checked) {
             return;
         }
+
         let click = getMouseCoords(event);
-        const ell = new Ellipse(createSVGElem('ellipse', 'none', undefined, '3'));
+        let moving = false;
+        const options = optionsEllipse.getElementsByTagName('input');
+        const ell = new Ellipse(createSVGElem('ellipse', 'none', undefined, options[0].value));
         svgPanel.appendChild(ell.svgFig);
         ({ x: ell.rect.x, y: ell.rect.y } = click);
 
-        const moveEllipse = (e) => {
-            const current = getMouseCoords(e);
-            if (e.altKey) {
-                click = ell.rect.getSymmetrical(current);
-            }
-            ell.rect.moveByAngeles(click, current);
-            ell.synchronizeWithRect();
-        };
-
-        const stopMoving = () => {
-            document.removeEventListener('mousemove', moveEllipse);
-            drawPanel.removeEventListener('mouseup', stopMoving);
+        const finish = () => {
             svgPanel.appendChild(ell.rect.svgFig);
 
             ell.rect.updateRefPointsCoords();
@@ -51,6 +43,34 @@ class Ellipse extends Figure {
 
             ell.rect.createTmpCopy = ell.createTmpCopy.bind(ell);
             ell.rect.deleteTmpCopy = ell.deleteTmpCopy.bind(ell);
+        };
+
+        if (event.ctrlKey) {
+            ell.rect.height = options[1].value;
+            ell.rect.width = options[2].value;
+            ell.synchronizeWithRect();
+            finish();
+            return;
+        }
+
+        const moveEllipse = (e) => {
+            moving = true;
+            const current = getMouseCoords(e);
+            if (e.altKey) {
+                click = ell.rect.getSymmetrical(current);
+            }
+            ell.rect.moveByAngeles(click, current);
+            ell.synchronizeWithRect();
+        };
+
+        const stopMoving = () => {
+            document.removeEventListener('mousemove', moveEllipse);
+            drawPanel.removeEventListener('mouseup', stopMoving);
+            if (!moving) {
+                svgPanel.removeChild(ell.svgFig);
+                return;
+            }
+            finish();
         };
 
         document.addEventListener('mousemove', moveEllipse);
