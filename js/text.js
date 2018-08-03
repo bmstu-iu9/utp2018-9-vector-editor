@@ -6,15 +6,18 @@ let textDiv;
 
 function addText() {
     textForeignObject = svgPanel.getElementById('textForeignObject');
+    textDiv = svgPanel.getElementById('textDiv');
 
     if(!text.checked) {
-        textForeignObject.getElementsByTagName('div')[0].setAttribute('contenteditable', false);
+        if(textDiv){
+            textDiv.setAttribute('contenteditable', false);
+        }
         return;
     }
 
     if(textForeignObject) {
         if(text.checked) {
-            textForeignObject.getElementsByTagName('div')[0].setAttribute('contenteditable', true);
+            textDiv.setAttribute('contenteditable', true);
         }
         return;
     }
