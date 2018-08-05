@@ -2,28 +2,28 @@
     Скрипт для создания многоугольника.
     Создание аналогично остальным фигурам. При этом, если зажата клавиша shift,
     то нижняя сторона многоугольника будет находиться в горизонтальном положении.
-    При помощи стрелок вверх и вниз можно изменять количество углов во время
-    создания многоугольника. После создания доступна клавиша alt, позволяющая
-    сохранить угол наклона фигуры. При этом остальные клавиши недоступны.
+    При помощи стрелок вверх и вниз можно изменять количество углов во время и после
+    создания многоугольника. Также после создания доступна клавиша alt, позволяющая
+    сохранить угол наклона фигуры, и ctrl, сохраняющая радиус неизменным.
 */
 'use strict';
 
-var ANGELES = 6; // Временная переменная
-
-const polygon = document.getElementById('polygon');
-
 class Polygon extends Figure {
-    constructor(svgFig) {
+    constructor(svgFig, angeles) {
         super(svgFig);
-        this.n = ANGELES;
+        this.n = +angeles;
         this.r = -1;
         this.center = new PolygonPoint(this, { x: 0, y: 0 }, -1);
         this.center.circle.onmousedown = this.movePolygon.bind(this);
 
         for (let i = 0; i < this.n; i++) {
-            this.refPoints.push(new PolygonPoint(this, { x: 0, y: 0 }, i));
             this.svgFig.points.appendItem(RefPoint.createSVGPoint({ x: 0, y: 0 }));
+            this.refPoints.push(new PolygonPoint(this, { x: 0, y: 0 }, i));
         }
+
+        this.updateNumOfVerts = this.updateNumOfVerts.bind(this);
+        this.decreaseNumOfVerts = this.decreaseNumOfVerts.bind(this);
+        this.increaseNumOfVerts = this.increaseNumOfVerts.bind(this);
     }
 
     static draw(event) {
@@ -32,67 +32,89 @@ class Polygon extends Figure {
         }
 
         let click = getMouseCoords(event);
-        const pg = new Polygon(createSVGElem('polygon', 'none', undefined, '3'));
+        let moving = false;
+        const options = optionsPolygon.getElementsByTagName('input');
+        const pg = new Polygon(createSVGElem('polygon', 'none', undefined, +options[0].value), +options[1].value);
         svgPanel.appendChild(pg.svgFig);
         ({ x: pg.center.x, y: pg.center.y } = click);
 
+        if (event.ctrlKey) {
+            pg.moveFixedOnBottom(options[2].value, 0);
+            pg.hideOrShow();
+            pg.showRefPoints();
+            pg.finished = true;
+            return;
+        }
+
         const movePolygon = (e) => {
+            moving = true;
             const coords = getMouseCoords(e);
             if (e.shiftKey) {
                 const [dx, dy] = [coords.x - pg.center.x, coords.y - pg.center.y];
                 const radius = Math.sqrt(dx*dx + dy*dy);
-                pg.moveFixedOnBottom(radius, pg.refPoints[0].ind);
+                pg.moveFixedOnBottom(radius, 0);
+                options[2].value = pg.r;
                 return;
             }
-            pg.moveUnfixed(coords, 0)
-        };
-
-        const updateNumOfVerts = (event) => {
-            if (event.keyCode == 38) {
-                pg.refPoints.push(new PolygonPoint(pg, { x: 0, y: 0 }, pg.n));
-                pg.svgFig.points.appendItem(RefPoint.createSVGPoint({ x: 0, y: 0 }));
-                pg.n++
-            } else if (event.keyCode == 40 && pg.n > 3) {
-                pg.n--;
-                pg.refPoints.length--;
-                pg.svgFig.points.removeItem(pg.n);
-            }
-            pg.moveFixedOnBottom(pg.r, 0);
+            pg.moveUnfixed(coords, 0);
+            options[2].value = pg.r;
         };
 
         const stopMoving = () => {
             document.removeEventListener('mousemove', movePolygon);
-            document.removeEventListener("keydown", updateNumOfVerts);
+            document.removeEventListener("keydown", pg.updateNumOfVerts);
             drawPanel.removeEventListener('mouseup', stopMoving);
-            pg.hideOrShow(true, polygon);
+            if (!moving) {
+                svgPanel.removeChild(pg.svgFig);
+                return;
+            }
+            pg.hideOrShow();
             pg.showRefPoints();
+            pg.finished = true;
         };
 
         document.addEventListener('mousemove', movePolygon);
-        document.addEventListener("keydown", updateNumOfVerts);
+        document.addEventListener("keydown", pg.updateNumOfVerts);
         drawPanel.addEventListener('mouseup', stopMoving);
     }
 
     takePoint(event) {
-        if (!cursor.checked) {
+        if (!cursor.checked || this.somePointTaken || someFigureTaken) {
             return;
         }
 
+        const options = optionsPolygon.getElementsByTagName('input');
         const clicked = getMouseCoords(event);
         let ind = this.findIndexMerged(clicked), newInd = null;
         if (ind === undefined) {
             return;
         }
 
+        this.refPoints[ind].circle.setAttribute('fill', '#FFFFFF');
+        for (let i = 0; i < ind; i++) {
+            this.svgFig.points.appendItem(this.svgFig.points.removeItem(0));
+            this.refPoints.push(this.refPoints.shift());
+        }
+        ind = 0;
+
         const movePoint = ( (e) => {
             const coords = getMouseCoords(e);
-            const [dx, dy] = [coords.x - this.center.x, coords.y - this.center.y];
-            const radius = Math.sqrt(dx*dx + dy*dy);
             if (e.altKey) {
+                const [dx, dy] = [coords.x - this.center.x, coords.y - this.center.y];
+                const radius = Math.sqrt(dx*dx + dy*dy);
                 this.moveWithFixedAngeles(radius);
+                options[1].value = this.n;
+                options[2].value = this.r;
+                return;
+            } else if (e.ctrlKey) {
+                this.moveWithFixedRadius(coords, ind);
+                options[1].value = this.n;
+                options[2].value = this.r;
                 return;
             }
-            this.moveUnfixed(coords, ind)
+            this.moveUnfixed(coords, ind);
+            options[1].value = this.n;
+            options[2].value = this.r;
         } ).bind(this);
 
         const stopMoving = ( (e) => {
@@ -100,6 +122,7 @@ class Polygon extends Figure {
             this.somePointTaken = someFigureTaken = false;
             this.refPoints[ind].circle.setAttribute('fill', '#FFFFFF');
             document.removeEventListener('mousemove', movePoint);
+            document.removeEventListener("keydown", this.updateNumOfVerts);
             this.refPoints[ind].circle.addEventListener('mousedown', this.takePoint);
             drawPanel.removeEventListener('mouseup', stopMoving);
         } ).bind(this);
@@ -108,6 +131,7 @@ class Polygon extends Figure {
         this.somePointTaken = someFigureTaken = true;
         this.refPoints[ind].circle.setAttribute('fill', '#0000FF');
         document.addEventListener('mousemove', movePoint);
+        document.addEventListener("keydown", this.updateNumOfVerts);
         this.refPoints[ind].circle.removeEventListener('mousedown', this.takePoint);
         drawPanel.addEventListener('mouseup', stopMoving);
     }
@@ -116,6 +140,7 @@ class Polygon extends Figure {
         if (!cursor.checked || this.somePointTaken || someFigureTaken) {
             return;
         }
+
         const clicked = getMouseCoords(event);
 
         const move = (e) => {
@@ -151,16 +176,24 @@ class Polygon extends Figure {
         const baseLen = Math.sqrt(2*r*r - 2*r*r*Math.cos((2*Math.PI)/this.n));
         const h = Math.sqrt(r*r - baseLen*baseLen/4);
         const start = { x: baseLen/2, y: h };
-        this.changeVertices(start, ind, this.center.x, this.center.y);
+        this.changeVertices(start, ind);
+    }
+
+    moveWithFixedRadius(vertex, ind) {
+        const start = { x: vertex.x - this.center.x, y: vertex.y - this.center.y };
+        const len = Math.sqrt(start.x*start.x + start.y*start.y);
+        [start.x, start.y] =  [(this.r/len)*start.x, (this.r/len)*start.y];
+        this.changeVertices(start, ind);
     }
 
     moveUnfixed(vertex, ind) {
         const start = { x: vertex.x - this.center.x, y: vertex.y - this.center.y };
         this.r = Math.sqrt(start.x*start.x + start.y*start.y);
-        this.changeVertices(start, ind, this.center.x, this.center.y);
+        this.changeVertices(start, ind);
     }
 
-    changeVertices(start, ind, dx, dy) {
+    changeVertices(start, ind) {
+        const [dx, dy] = [this.center.x, this.center.y];
         const deg = (2*Math.PI)/this.n;
         for (let i = 0; i < this.n; i++) {
             const x = start.x*Math.cos(i*deg) - start.y*Math.sin(i*deg);
@@ -179,6 +212,37 @@ class Polygon extends Figure {
         this.r = newRadius;
     }
 
+    updateNumOfVerts(event) {
+        const options = optionsPolygon.getElementsByTagName('input');
+        if (event.keyCode == 38) {
+            options[1].value++;
+            this.increaseNumOfVerts();
+        } else if (event.keyCode == 40 && this.n > 3) {
+            options[1].value--;
+            this.decreaseNumOfVerts();
+        }
+    }
+
+    increaseNumOfVerts() {
+        this.svgFig.points.appendItem(RefPoint.createSVGPoint({ x: 0, y: 0 }));
+        this.refPoints.push(new PolygonPoint(this, { x: 0, y: 0 }, this.n));
+        if (this.finished) {
+            svgPanel.appendChild(this.refPoints[this.refPoints.length - 1].circle);
+        }
+        this.n++
+        this.moveUnfixed(this.refPoints[0], 0);
+    }
+
+    decreaseNumOfVerts() {
+        this.n--;
+        if (this.finished) {
+            svgPanel.removeChild(this.refPoints[this.refPoints.length - 1].circle);
+        }
+        this.refPoints.length--;
+        this.svgFig.points.removeItem(this.n);
+        this.moveUnfixed(this.refPoints[0], 0);
+    }
+
     showRefPoints() {
         this.refPoints.forEach(p => svgPanel.appendChild(p.circle));
         svgPanel.appendChild(this.center.circle);
@@ -194,20 +258,53 @@ class Polygon extends Figure {
         this.copy.setAttribute('points', this.svgFig.getAttribute('points'));
         svgPanel.insertBefore(this.copy, this.svgFig);
     }
+
+    showOptions() {
+        hideAllOptions();
+        optionsPolygon.classList.add('show-option');
+        const options = optionsPolygon.getElementsByTagName('input');
+        options[0].value = this.svgFig.getAttribute('stroke-width');
+        options[1].value = this.n;
+        options[2].value = this.r;
+    }
 }
 
 class PolygonPoint extends RefPoint {
     constructor(figure, coords, ind) {
-        super(figure, coords, 3, polygon);
-        this.ind = ind;
+        super(figure, coords,polygon);
+        this.svgPoint = figure.svgFig.points[ind];
 
         this.circle.addEventListener('mousedown', this.figure.takePoint.bind(this.figure));
     }
 
     setCoords(coords) {
-        this.figure.svgFig.points[this.ind].x = this.x = coords.x;
-        this.figure.svgFig.points[this.ind].y = this.y = coords.y;
+        this.svgPoint.x = this.x = coords.x;
+        this.svgPoint.y = this.y = coords.y;
     }
 }
 
 drawPanel.addEventListener('mousedown', Polygon.draw = Polygon.draw.bind(Polygon));
+
+{
+    const inputs = optionsPolygon.getElementsByTagName('input');
+    const selectors = optionsPolygon.getElementsByTagName('ul');
+    Figure.addPanelListener(Polygon, inputs, selectors, 0, () => {
+        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
+    });
+    Figure.addPanelListener(Polygon, inputs, selectors, 1, () => {
+        let n = +inputs[1].value;
+        if (n < 3) {
+            n = 3;
+        }
+        if (currentFigure.n != n) {
+            const update = (currentFigure.n < n) ? currentFigure.increaseNumOfVerts
+                                            : currentFigure.decreaseNumOfVerts;
+            while (currentFigure.n != n) {
+                update();
+            }
+        }
+    });
+    Figure.addPanelListener(Polygon, inputs, selectors, 2, () => {
+        currentFigure.moveWithFixedAngeles(+inputs[2].value);
+    });
+}
