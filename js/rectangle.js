@@ -7,18 +7,15 @@
 */
 'use strict';
 
-const rect = document.getElementById('rect');
-const roundedRect = document.getElementById('rounded-rect');
-
 class Rectangle extends Figure {
-    constructor(svgFigure, kindOfRect) {
+    constructor(svgFigure) {
         super(svgFigure);
 
-        this.center = new RectPoint(this, { x: 0, y: 0}, kindOfRect);
+        this.center = new RectPoint(this, { x: 0, y: 0});
         this.center.circle.onmousedown = this.moveRect.bind(this);
 
         for (let i = 0; i < 8; i++) {
-            this.refPoints.push(new RectPoint(this, { x: 0, y: 0}, kindOfRect));
+            this.refPoints.push(new RectPoint(this, { x: 0, y: 0}));
         }
 
         this.getMergeCoords = this.getMergeCoords.bind(this);
@@ -26,31 +23,26 @@ class Rectangle extends Figure {
     }
 
     static draw(event) {
-        if (!rect.checked && !roundedRect.checked) {
+        if (!rect.checked) {
             return;
         }
 
         let click = getMouseCoords(event);
         let moving = false;
-        const options = (currentInstrument == rect ? optionsRect : optionsRoundedRect).getElementsByTagName('input');
-        const rectangle = new Rectangle(createSVGElem('rect', 'none', undefined, options[0].value), currentInstrument);
+        const options = optionsRect.getElementsByTagName('input');
+        const rectangle = new Rectangle(createSVGElem('rect', 'none', undefined, +options[0].value));
         ({ x: rectangle.x, y: rectangle.y } = click);
-        if (roundedRect.checked) {
-            rectangle.r = options[1].value;
-        }
+        rectangle.r = +options[1].value;
         svgPanel.appendChild(rectangle.svgFig);
 
         if (event.ctrlKey) {
-            if (roundedRect.checked) {
-                rectangle.height = options[2].value;
-                rectangle.width = options[3].value;
-            } else {
-                rectangle.height = options[1].value;
-                rectangle.width = options[2].value;
-            }
+            rectangle.height = +options[2].value;
+            rectangle.width = +options[3].value;
             rectangle.updateRefPointsCoords();
-            rectangle.hideOrShow(true, currentInstrument, undefined, undefined, true);
+            rectangle.center.setCoords(rectangle.c);
+            rectangle.hideOrShow();
             rectangle.showRefPoints();
+            rectangle.finished = true;
             return;
         }
 
@@ -61,6 +53,8 @@ class Rectangle extends Figure {
                 click = rectangle.getSymmetrical(current);
             }
             rectangle.moveByAngeles(click, current);
+            options[2].value = rectangle.height;
+            options[3].value = rectangle.width;
         };
 
         const stopMoving = () => {
@@ -71,8 +65,9 @@ class Rectangle extends Figure {
                 return;
             }
             rectangle.updateRefPointsCoords();
-            rectangle.hideOrShow(true, currentInstrument);
+            rectangle.hideOrShow();
             rectangle.showRefPoints();
+            rectangle.finished = true;
         };
 
         document.addEventListener('mousemove', moveRect);
@@ -84,6 +79,7 @@ class Rectangle extends Figure {
             return;
         }
 
+        const options = optionsRect.getElementsByTagName('input');
         const clicked = getMouseCoords(event);
         let ind = this.findIndexMerged(clicked), newInd = null;
         if (ind === undefined) {
@@ -93,7 +89,7 @@ class Rectangle extends Figure {
         const pushed = { x: this.refPoints[ind].x, y: this.refPoints[ind].y };
         let fixed = { x: this.refPoints[symInd].x, y: this.refPoints[symInd].y };
         const [horizontal, angelPushed] = [pushed.y == fixed.y, !(pushed.y == fixed.y || pushed.x == fixed.x)];
-        
+
         const movePoint = ( (e) => {
             const coords = getMouseCoords(e);
             if (angelPushed) {
@@ -117,6 +113,8 @@ class Rectangle extends Figure {
                 ind = newInd;
                 this.refPoints[ind].circle.setAttribute('fill', '#0000FF');
             }
+            options[2].value = this.height;
+            options[3].value = this.width;
         } ).bind(this);
 
         const stopMoving = (e) => {
@@ -144,13 +142,13 @@ class Rectangle extends Figure {
         if (!cursor.checked || this.somePointTaken || someFigureTaken) {
             return;
         }
+
         const clicked = getMouseCoords(event);
 
         const move = (e) => {
             const coords = getMouseCoords(e);
             this.x = coords.x - this.width/2;
             this.y = coords.y - this.height/2;
-            this.center.setCoords(coords);
             this.updateRefPointsCoords();
         };
 
@@ -182,6 +180,7 @@ class Rectangle extends Figure {
         update(5, x + width/2, y + height);
         update(6, x, y + height);
         update(7, x, y + height/2);
+        this.center.setCoords(this.c);
     }
 
     showRefPoints() {
@@ -204,7 +203,6 @@ class Rectangle extends Figure {
 
     setAttrs(attrs) {
         [this.x, this.y, this.width, this.height] = attrs;
-        this.center.setCoords(this.c);
     }
 
     getAttrsByAngeles(a, b) {
@@ -247,6 +245,16 @@ class Rectangle extends Figure {
         svgPanel.insertBefore(this.copy, this.svgFig);
     }
 
+    showOptions() {
+        hideAllOptions();
+        optionsRect.classList.add('show-option');
+        const options = optionsRect.getElementsByTagName('input');
+        options[0].value = this.svgFig.getAttribute('stroke-width');
+        options[1].value = this.r;
+        options[2].value = this.height;
+        options[3].value = this.width;
+    }
+
     get x() { return +this.svgFig.getAttribute('x'); }
     get y() { return +this.svgFig.getAttribute('y'); }
     get r() { return +this.svgFig.getAttribute('rx'); }
@@ -254,19 +262,19 @@ class Rectangle extends Figure {
     get height() { return +this.svgFig.getAttribute('height'); }
     get c() { return { x: this.x + this.width/2, y: this.y + this.height/2 }; }
 
-    set x(v) { this.svgFig.setAttribute('x', v); }
-    set y(v) { this.svgFig.setAttribute('y', v); }
-    set width(v) { this.svgFig.setAttribute('width', v); }
-    set height(v) { this.svgFig.setAttribute('height', v); }
+    set x(v) { this.svgFig.setAttribute('x', +v); }
+    set y(v) { this.svgFig.setAttribute('y', +v); }
+    set width(v) { this.svgFig.setAttribute('width', +v); }
+    set height(v) { this.svgFig.setAttribute('height', +v); }
     set r(v) {
-        this.svgFig.setAttribute('rx', v);
-        this.svgFig.setAttribute('ry', v);
+        this.svgFig.setAttribute('rx', +v);
+        this.svgFig.setAttribute('ry', +v);
     }
 }
 
 class RectPoint extends RefPoint {
-    constructor(rectangle, coords, kindOfRect) {
-        super(rectangle, coords, kindOfRect);
+    constructor(rectangle, coords) {
+        super(rectangle, coords, rect);
 
         this.circle.addEventListener('mousedown', this.figure.takePoint.bind(this.figure));
     }
@@ -278,3 +286,22 @@ class RectPoint extends RefPoint {
 }
 
 drawPanel.addEventListener('mousedown', Rectangle.draw = Rectangle.draw.bind(Rectangle));
+
+{
+    const inputs = optionsRect.getElementsByTagName('input');
+    const selectors = optionsRect.getElementsByTagName('ul');
+    Figure.addPanelListener(Rectangle, inputs, selectors, 0, () => {
+        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
+    });
+    Figure.addPanelListener(Rectangle, inputs, selectors, 1, () => {
+        currentFigure.r = +inputs[1].value;
+    });
+    Figure.addPanelListener(Rectangle, inputs, selectors, 2, () => {
+        currentFigure.height = +inputs[2].value;
+        currentFigure.updateRefPointsCoords();
+    });
+    Figure.addPanelListener(Rectangle, inputs, selectors, 3, () => {
+        currentFigure.width = +inputs[3].value;
+        currentFigure.updateRefPointsCoords();
+    });
+}

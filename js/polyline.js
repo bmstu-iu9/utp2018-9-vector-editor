@@ -16,14 +16,8 @@
     переместить и снова кликнуть ЛКМ. Для удаления нужно нажать на опорную точку ПКМ.
     Если при захвате опорной точки был изменен инструмент, то она вернется на
     свою исходную позицию.
-
-        Примечание:
-    В настоящий момент взаимодействие с панелью опций не реализовано.
 */
 'use strict';
-
-const pen = document.getElementById('pen');
-const cursor = document.getElementById('cursor');
 
 class Polyline extends Figure {
     constructor(svgFigure) {
@@ -47,13 +41,15 @@ class Polyline extends Figure {
         if (!pen.checked) {
             return;
         }
+
         const clickCoord = getMouseCoords(event);
         const options = optionsPen.getElementsByTagName('input');
-        const pl = new Polyline(createSVGElem('polyline', 'none', undefined, options[0].value));
+        const pl = new Polyline(createSVGElem('polyline', 'none', undefined, +options[0].value));
         pl.createTmpLine(clickCoord);
         svgPanel.appendChild(pl.svgFig);
         svgPanel.appendChild(pl.tmpLine);
         someFigureTaken = true;
+        currentFigure = this;
 
         pl.addPoint(event);
         drawPanel.addEventListener('click', pl.addPoint);
@@ -67,6 +63,7 @@ class Polyline extends Figure {
             this.finish();
             return;
         }
+
         const [point, merged] = this.getMergeCoords(event);
         if (this.refPoints.length > 2 && this.refPoints[0].equals(point)) {
             const refp = new PolylinePoint(this, point);
@@ -125,7 +122,7 @@ class Polyline extends Figure {
         delete this.tmpLine;
         this.finished = true;
         someFigureTaken = false;
-        this.hideOrShow((this.refPoints.length != 1) ? true : false, pen);
+        this.hideOrShow((this.refPoints.length != 1) ? true : false);
     }
 
     takePoint(event) {
@@ -203,6 +200,8 @@ class Polyline extends Figure {
             this.svgFig.points.removeItem(0);
             svgPanel.removeChild(this.svgFig);
             this.refPoints = undefined;
+            hideAllOptions();
+            currentFigure = null;
         } else if (this.refPoints.length == 3 && this.isClosed()) {
             this.svgFig.points.removeItem(2);
             this.refPoints.splice(2, 1);
@@ -258,6 +257,13 @@ class Polyline extends Figure {
             appendAll(this.refPoints.length - 1, this.refPoints.length - 2);
         }
     }
+
+    showOptions() {
+        hideAllOptions();
+        optionsPen.classList.add('show-option');
+        const options = optionsPen.getElementsByTagName('input');
+        options[0].value = this.svgFig.getAttribute('stroke-width');
+    }
 }
 
 class PolylinePoint extends RefPoint {
@@ -276,3 +282,11 @@ class PolylinePoint extends RefPoint {
 }
 
 drawPanel.addEventListener('click', Polyline.draw = Polyline.draw.bind(Polyline));
+
+{
+    const inputs = optionsPen.getElementsByTagName('input');
+    const selectors = optionsPen.getElementsByTagName('ul');
+    Figure.addPanelListener(Polyline, inputs, selectors, 0, () => {
+        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
+    });
+}

@@ -1,5 +1,11 @@
 'use strict';
 
+const cursor = document.getElementById('cursor');
+const pen = document.getElementById('pen');
+const rect = document.getElementById('rect');
+const ellipse = document.getElementById('ellipse');
+const polygon = document.getElementById('polygon');
+
 class Figure {
     constructor(svgFigure) {
         this.svgFig = svgFigure;
@@ -26,33 +32,44 @@ class Figure {
         }
     }
 
-    hideOrShow(isShowing, instrument, hideHelper = () => {}, showHelper = () => {}, fast = false) {
-        let count = (instrument == pen || fast) ? 1 : 0;
-        const check = ( () => this !== undefined && !this.somePointTaken && !someFigureTaken ).bind(this);
+    hideOrShow(isShowing = true) {
+        currentFigure = this;
+
+        const check = ( () => {
+            return this.refPoints !== undefined && !this.somePointTaken && !someFigureTaken;
+        }).bind(this);
+
         const hide = ( () => {
-            if (count > 0 && isShowing && this.refPoints !== undefined) {
-                hideHelper();
+            if (isShowing && this.refPoints !== undefined) {
                 this.hideRefPoints();
+                if (currentFigure == this) {
+                    if (cursor.checked) {
+                        hideAllOptions();
+                    }
+                    currentFigure = null;
+                }
                 isShowing = false;
             }
-            count++;
         } ).bind(this);
-        drawPanel.addEventListener('click', hide);
-        this.svgFig.addEventListener('click', ( () => {
+        drawPanel.addEventListener('mousedown', hide);
+
+        this.svgFig.addEventListener('mousedown', ( () => {
             if (check() && !isShowing) {
-                showHelper();
                 this.showRefPoints();
+                this.showOptions();
+                currentFigure = this;
                 isShowing = true;
             }
         } ).bind(this));
+
         this.svgFig.addEventListener('mouseover', () => {
             if (check()) {
-                drawPanel.removeEventListener('click', hide);
+                drawPanel.removeEventListener('mousedown', hide);
             }
         });
         this.svgFig.addEventListener('mouseout', () => {
             if (check()) {
-                drawPanel.addEventListener('click', hide);
+                drawPanel.addEventListener('mousedown', hide);
             }
         });
     }
@@ -62,6 +79,24 @@ class Figure {
     deleteTmpCopy() {
         svgPanel.removeChild(this.copy);
         delete this.copy;
+    }
+
+    static addPanelListener(type, inputs, selectors, ind, update) {
+        inputs[ind].addEventListener('keydown', (e) => {
+            if (currentFigure instanceof type) {
+                if (e.keyCode == 13) {
+                    if (inputs[ind].value < 0) {
+                        inputs[ind].value = 0;
+                    }
+                    update();
+                }
+            }
+        });
+        selectors[ind].addEventListener('click', () => {
+            if (currentFigure instanceof type) {
+                update();
+            }
+        });
     }
 }
 
@@ -85,7 +120,7 @@ class RefPoint {
     }
 
     dispatchAndColor(event, color, instrument) {
-        if ( (instrument.checked && (someFigureTaken || !this.figure.finished) ) ||
+        if ( (instrument.checked && (!someFigureTaken || !this.figure.finished) ) ||
             (cursor.checked && !someFigureTaken) ) {
             this.figure.svgFig.dispatchEvent(new Event(event));
             this.circle.setAttribute('fill', color);
@@ -107,3 +142,9 @@ class RefPoint {
     get y() { return +this.circle.getAttribute('cy'); }
     get r() { return +this.circle.getAttribute('r'); }
 }
+
+cursor.addEventListener('click', () => {
+    if (currentFigure !== null) {
+        currentFigure.showOptions();
+    }
+});
