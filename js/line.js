@@ -2,6 +2,7 @@
 
 'use strict';
 
+const options = optionsLine.getElementsByTagName('input');
 const line = document.getElementById('line');
 const previousState = [];
 
@@ -13,13 +14,14 @@ const mouseDown = (event) => {
         clearSvgPanel();
         loadPreviousState();
         const dest = getMouseCoords(event);
+        options[1].value = getDist(src, dest);
         svgPanel.appendChild( createLine(src, dest, '0.5') );
     }
 
     const mouseUp = (event) => {
         const dest = getMouseCoords(event);
-        previousState.push(svgPanel.lastChild);
         svgPanel.appendChild( createLine(src, dest) );
+        previousState.push(svgPanel.lastChild);
 
         document.removeEventListener('mousemove', mouseMove);
         drawPanel.removeEventListener('mouseup', mouseUp);
@@ -31,11 +33,10 @@ const mouseDown = (event) => {
 drawPanel.addEventListener('mousedown', mouseDown);
 
 const createLine = (src, dest, opacity = '1') => {
-    const options = optionsLine.getElementsByTagName('input');
 	const line = createSVGElem('line',
-                               'undefined', // stroke
-                               '#FF0000',   // stroke color
-                               '3',         // stroke-width
+                               'undefined',      // stroke
+                               '#FF0000',        // stroke color
+                               options[0].value, // stroke-width
                                opacity);
 	line.setAttribute('x1', src.x);	line.setAttribute('x2', dest.x);
 	line.setAttribute('y1', src.y);	line.setAttribute('y2', dest.y);
@@ -53,4 +54,10 @@ const loadPreviousState = () => {
     for (let i = 0; i < previousState.length; i++) {
         svgPanel.appendChild(previousState[i]);
     }
+}
+
+const getDist = (src, dest) => {
+    const a = dest.x - src.x;
+    const b = dest.y - src.x;
+    return Math.sqrt( a*a + b*b );
 }
