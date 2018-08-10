@@ -1,4 +1,7 @@
 'use strict';
+  
+
+
 
 let dx,dy,shape,x,y,path,pathTaken = false;
 let isDrawing=false;
