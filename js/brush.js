@@ -1,8 +1,6 @@
 'use strict';
   
 
-
-
 let dx,dy,shape,x,y,path,pathTaken = false;
 let isDrawing=false;
 let color='black',width,linecap='round',linejoin='round';
