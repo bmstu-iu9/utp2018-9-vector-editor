@@ -1,10 +1,10 @@
 'use strict';
 
-let shape,x,y,path;
+let dx,dy,shape,x,y,path,pathTaken = false;
 let isDrawing=false;
 let color='black',width,linecap='round',linejoin='round';
 const brsh = document.getElementById('brush');
-
+const crsr = document.getElementById('cursor');
 
   const changeThickness = ()=>{
     width=document.getElementById('brush_width').value;
@@ -28,6 +28,7 @@ const brsh = document.getElementById('brush');
     shape.setAttribute('stroke-linejoin', linejoin);
     path = 'M ' + x + ' ' + y + ' L ';
     svgPanel.appendChild(shape);
+
   };
 
 
@@ -45,11 +46,59 @@ const brsh = document.getElementById('brush');
 
   const up = ()=> {
       isDrawing = false;
+      pathTaken = false;
       document.removeEventListener('mousemove',move);
       drawPanel.removeEventListener('mouseup',up);
     };
 
 
+  const target = (event) => {
+      if (event.target.toString() === '[object SVGPathElement]')
+          pathTaken = true;
+  };
+
+
+  const deltaMouse=()=>{
+      dx=getMouseCoords(event).x-x;
+      dy=getMouseCoords(event).y-y;
+      x=getMouseCoords(event).x;
+      y=getMouseCoords(event).y;
+      console.log(dx,dy);
+      return {dx,dy};
+};
+
+  const changePath=(delta,path)=>{
+      for(let i=0;i<path.length-1;i+=2)
+      {
+          path[i]+=delta.dx;
+          path[i+1]+=delta.dy;
+      }
+  };
+
+  const startMoving=(event)=>{
+      target(event);
+      if (!crsr.checked || !pathTaken)
+          return;
+      currentPath = event.target;
+      drawPanel.addEventListener('mousemove',movePath);
+      drawPanel.addEventListener('mouseup',up);
+      x=getMouseCoords(event).x;
+      y=getMouseCoords(event).y;
+      console.log(x,y);
+  };
+
+  const movePath=(event)=>{
+      if(pathTaken) {
+          console.log('ALO');
+          path = currentPath.getAttribute('d').split(' ').map(Number).filter(Boolean);
+          changePath(deltaMouse(), path);
+          let p = 'M ' + path.slice(0, 2).join(' ') + ' L ' + path.slice(2).join(' ');
+          currentPath.setAttribute('d', p);
+      }
+};
+
 drawPanel.addEventListener('mousedown',start);
+drawPanel.addEventListener('mousedown',startMoving);
+
 changeThickness();
 
