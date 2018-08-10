@@ -8,14 +8,14 @@
 */
 'use strict';
 
-var ANGELES = 6; // Временная переменная
+var angles = 6; // Временная переменная
 
 const polygon = document.getElementById('polygon');
 
 class Polygon extends Figure {
     constructor(svgFig) {
         super(svgFig);
-        this.n = ANGELES;
+        this.n = angles;
         this.r = -1;
         this.center = new PolygonPoint(this, { x: 0, y: 0 }, -1);
         this.center.circle.onmousedown = this.movePolygon.bind(this);
