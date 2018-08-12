@@ -3,8 +3,6 @@
 */
 'use strict';
 
-const ellipse = document.getElementById('ellipse');
-
 class Ellipse extends Figure {
     constructor(svgFig) {
         super(svgFig);
@@ -15,29 +13,25 @@ class Ellipse extends Figure {
         if (!ellipse.checked) {
             return;
         }
+
         let click = getMouseCoords(event);
-        const ell = new Ellipse(createSVGElem('ellipse', 'none', undefined, '3'));
+        let moving = false;
+        const options = optionsEllipse.getElementsByTagName('input');
+        const ell = new Ellipse(createSVGElem('ellipse', 'none', undefined, +options[0].value));
         svgPanel.appendChild(ell.svgFig);
         ({ x: ell.rect.x, y: ell.rect.y } = click);
 
-        const moveEllipse = (e) => {
-            const current = getMouseCoords(e);
-            if (e.altKey) {
-                click = ell.rect.getSymmetrical(current);
-            }
-            ell.rect.moveByAngeles(click, current);
-            ell.synchronizeWithRect();
-        };
-
-        const stopMoving = () => {
-            document.removeEventListener('mousemove', moveEllipse);
-            drawPanel.removeEventListener('mouseup', stopMoving);
+        const finish = () => {
             svgPanel.appendChild(ell.rect.svgFig);
 
+            for (let i = 0; i < ell.rect.refPoints.length; i++) {
+                ell.rect.refPoints[i].figure = ell;
+            }
+            ell.rect.center.figure = ell;
+
             ell.rect.updateRefPointsCoords();
-            ell.rect.hideOrShow(true, rect, () => svgPanel.removeChild(ell.rect.svgFig),
-                                            () => svgPanel.appendChild(ell.rect.svgFig));
-            ell.rect.showRefPoints();
+            ell.hideOrShow();
+            ell.showRefPoints();
 
             ['click', 'mouseover', 'mouseout'].forEach(e => {
                 ell.svgFig.addEventListener(e, () => ell.rect.svgFig.dispatchEvent(new Event(e)));
@@ -47,14 +41,58 @@ class Ellipse extends Figure {
             ell.rect.updateRefPointsCoords = () => {
                 update();
                 ell.synchronizeWithRect();
+                options[1].value = ell.rect.height;
+                options[2].value = ell.rect.width;
             };
 
             ell.rect.createTmpCopy = ell.createTmpCopy.bind(ell);
             ell.rect.deleteTmpCopy = ell.deleteTmpCopy.bind(ell);
+            ell.finished = ell.rect.finished = true;
+        };
+
+        if (event.ctrlKey) {
+            ell.rect.height = options[1].value;
+            ell.rect.width = options[2].value;
+            ell.rect.center.setCoords(ell.rect.c);
+            ell.synchronizeWithRect();
+            finish();
+            return;
+        }
+
+        const moveEllipse = (e) => {
+            moving = true;
+            const current = getMouseCoords(e);
+            if (e.altKey) {
+                click = ell.rect.getSymmetrical(current);
+            }
+            ell.rect.moveByAngeles(click, current);
+            ell.synchronizeWithRect();
+            options[1].value = ell.rect.height;
+            options[2].value = ell.rect.width;
+        };
+
+        const stopMoving = () => {
+            document.removeEventListener('mousemove', moveEllipse);
+            drawPanel.removeEventListener('mouseup', stopMoving);
+            if (!moving) {
+                svgPanel.removeChild(ell.svgFig);
+                return;
+            }
+            finish();
         };
 
         document.addEventListener('mousemove', moveEllipse);
         drawPanel.addEventListener('mouseup', stopMoving);
+    }
+
+    showRefPoints() {
+        svgPanel.appendChild(this.rect.svgFig);
+        this.rect.showRefPoints();
+    }
+
+    hideRefPoints() {
+        svgPanel.removeChild(this.rect.svgFig);
+        this.rect.hideRefPoints();
     }
 
     synchronizeWithRect() {
@@ -71,6 +109,15 @@ class Ellipse extends Figure {
         svgPanel.insertBefore(this.copy, this.svgFig);
     }
 
+    showOptions() {
+        hideAllOptions();
+        optionsEllipse.classList.add('show-option');
+        const options = optionsEllipse.getElementsByTagName('input');
+        options[0].value = this.svgFig.getAttribute('stroke-width');
+        options[1].value = 2*this.ry;
+        options[2].value = 2*this.rx;
+    }
+
     set x(v) { this.svgFig.setAttribute('cx', v); }
     set y(v) { this.svgFig.setAttribute('cy', v); }
     set rx(v) { this.svgFig.setAttribute('rx', v); }
@@ -83,3 +130,21 @@ class Ellipse extends Figure {
 }
 
 drawPanel.addEventListener('mousedown', Ellipse.draw = Ellipse.draw.bind(Ellipse));
+
+{
+    const inputs = optionsEllipse.getElementsByTagName('input');
+    const selectors = optionsEllipse.getElementsByTagName('ul');
+    Figure.addPanelListener(Ellipse, inputs, selectors, 0, () => {
+        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
+    });
+    Figure.addPanelListener(Ellipse, inputs, selectors, 1, () => {
+        currentFigure.rect.height = +inputs[1].value;
+        currentFigure.rect.updateRefPointsCoords();
+        currentFigure.synchronizeWithRect();
+    });
+    Figure.addPanelListener(Ellipse, inputs, selectors, 2, () => {
+        currentFigure.rect.width = +inputs[2].value;
+        currentFigure.rect.updateRefPointsCoords();
+        currentFigure.synchronizeWithRect();
+    });
+}

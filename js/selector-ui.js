@@ -1,17 +1,16 @@
 /*Панели опций*/
-let optionsPen = document.getElementById('options-pen');
-let optionsText = document.getElementById('options-text');
-let optionsLine = document.getElementById('options-line');
-let optionsRect = document.getElementById('options-rect');
-let optionsRoundedRect = document.getElementById('options-rounded-rect');
-let optionsEllipse = document.getElementById('options-ellipse');
-let optionsPolygon = document.getElementById('options-polygon');
-let optionsBrush = document.getElementById('options-brush');
-let optionsEraser = document.getElementById('options-eraser');
-let optionsZoom = document.getElementById('options-zoom');
+const optionsPen = document.getElementById('options-pen');
+const optionsText = document.getElementById('options-text');
+const optionsLine = document.getElementById('options-line');
+const optionsRect = document.getElementById('options-rect');
+const optionsEllipse = document.getElementById('options-ellipse');
+const optionsPolygon = document.getElementById('options-polygon');
+const optionsBrush = document.getElementById('options-brush');
+const optionsEraser = document.getElementById('options-eraser');
+const optionsZoom = document.getElementById('options-zoom');
 
 /*Механика работы селектора*/
-let allSelectors = document.querySelectorAll('.selector');
+const allSelectors = document.querySelectorAll('.selector');
 for (let i = 0; i < allSelectors.length; i++) {
     let input = allSelectors[i].querySelectorAll('.selector-field');
     let allOptions = allSelectors[i].querySelectorAll('.selector-li');
@@ -28,7 +27,6 @@ const hideAllOptions = () => {
     optionsLine.classList.remove('show-option');
     optionsRect.classList.remove('show-option');
     optionsBrush.classList.remove('show-option');
-    optionsRoundedRect.classList.remove('show-option');
     optionsEllipse.classList.remove('show-option');
     optionsPolygon.classList.remove('show-option');
     optionsEraser.classList.remove('show-option');
@@ -47,8 +45,6 @@ const showOptions = () => {
         optionsLine.classList.add('show-option');
     } else if (currentInstrument.alt == 'Прямоугольник') {
         optionsRect.classList.add('show-option');
-    } else if (currentInstrument.alt == 'Округленный прямоугольник') {
-        optionsRoundedRect.classList.add('show-option');
     } else if (currentInstrument.alt == 'Эллипс') {
         optionsEllipse.classList.add('show-option');
     } else if (currentInstrument.alt == 'Многоугольник') {
