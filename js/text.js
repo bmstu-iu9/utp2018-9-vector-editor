@@ -1,20 +1,22 @@
 /*
-    Скрипт для создания области для пользовательского ввода текста.
-    Нажатием ЛКМ на холсте можно создать только первую область, а для дальнейшего создания требуется сочетание Ctrl + ЛКМ,
-    при этом обасть создается в точке нажатия и с размерами по умолчанию(336 : 200)px;
-    Также можно перемещать и менять размеры данной области.
+    Скрипт нужен для создания области пользовательского ввода текста.
+    Нажатием ЛКМ, на холсте, можно создать только первую область.
+    Для дальнейшего же создания требуется сочетание Ctrl + ЛКМ, при этом обасть создается в точке нажатия с размерами по умолчанию(336 : 200)px;
+    Также, можно перемещать и менять размеры данной области.
     Используется скрипт прямоугольника.
-    Строка автоматически переходит на новую, если достигла границы области.
-    Если текст выходит больше чем заданные границы области, то в область добавляется опция прокручивания.
-    Также при помощи панели опций можно менять шрифт, размер шрифта, цвет.
-    Чтоб изменить, следует двумя нажатиями ЛКМ выбрать опцию, которую желаете применить.
-    По умолчанию шрифт: Arial, размер шрифта: 13pt, и цвет: черный.
-    Редактировать текст можно только при выборе курсора или текста.
-    Также имеется возможность использовать горячие сочетания клавиш:
-    Ctrl + B - полужирный (тег STRONG).
-    Ctrl + I	 - курсив (тег EM).
-    Ctrl + U	 - подчеркнутый (тег U).
-    Ctrl + Z - отмена последнего действия
+    Строка автоматически переходит на новую, если она достигла границы области.
+    Если текст выходит больше, чем заданные границы области, то в эту область добавляется опция прокручивания.
+    Также, при помощи панели опций можно менять сам шрифт, размер шрифта, цвет.
+    По умолчанию параметры:
+    шрифт— Arial;
+    размер шрифта— 13pt;
+    цвет—черный.
+    Редактировать текст можно только при выборе опции курсора или текста.
+    В дополнение, имеется возможность использовать горячие сочетания клавиш:
+    Ctrl + B —полужирный (тег STRONG).
+    Ctrl + I —курсив (тег EM).
+    Ctrl + U —подчеркнутый (тег U).
+    Ctrl + Z —отмена последнего действия.
 */
 'use strict';
 
@@ -57,6 +59,7 @@ class TextBox extends Figure {
         tbox.div.style.fontSize = '13pt';
 
         optionsText.getElementsByTagName('input')[1].value = '13';
+        optionsText.getElementsByTagName('input')[2].value = 'Черный';
         tbox.rect.center.setCoords(tbox.rect.c);
         tbox.synchronizeWithRect();
         svgPanel.appendChild(tbox.rect.svgFig);
@@ -213,8 +216,9 @@ drawPanel.addEventListener('mousedown', TextBox.draw = TextBox.draw.bind(TextBox
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].setAttribute('readonly', '');
     }
+
     selectors[0].addEventListener("mousedown", (evt) => {
-      evt.preventDefault();
+      inputs[0].value = evt.target.innerHTML;
       document.execCommand('fontname', false, inputs[0].value);
     });
 
@@ -230,16 +234,16 @@ drawPanel.addEventListener('mousedown', TextBox.draw = TextBox.draw.bind(TextBox
     }
 
     selectors[1].addEventListener("mousedown", (evt) => {
-      evt.preventDefault();
+      inputs[1].value = evt.target.innerHTML;
       changeFont(inputs[1].value);
     });
 
     selectors[2].addEventListener("mousedown", (evt) => {
-      evt.preventDefault();
+      inputs[2].value = evt.target.innerHTML;
       let color = 'black';
       if(inputs[2].value[0] == "К") {
           color = 'red';
-      }else if(inputs[2].value[0] == "C") {
+      }else if(inputs[2].value[0] == "С") {
           color = 'blue';
       }else if(inputs[2].value[0] == "З") {
           color = 'green';
