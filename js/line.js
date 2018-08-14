@@ -9,6 +9,7 @@ const previousState = [];
 const mouseDown = (event) => {
     if (!line.checked) return;
 	const src = getMouseCoords(event);
+    savePreviousState();
 
     const mouseMove = (event) => {
         clearSvgPanel();
@@ -21,7 +22,6 @@ const mouseDown = (event) => {
     const mouseUp = (event) => {
         const dest = getMouseCoords(event);
         svgPanel.appendChild( createLine(src, dest) );
-        previousState.push(svgPanel.lastChild);
 
         document.removeEventListener('mousemove', mouseMove);
         drawPanel.removeEventListener('mouseup', mouseUp);
@@ -47,6 +47,12 @@ const createLine = (src, dest, opacity = '1') => {
 const clearSvgPanel = () => {
     while (svgPanel.firstChild) {
         svgPanel.removeChild(svgPanel.firstChild);
+    }
+}
+
+const savePreviousState = () => {
+    for (let i = 0; i < svgPanel.childNodes.length; i++) {
+        previousState.push(svgPanel.childNodes[i]);
     }
 }
 
