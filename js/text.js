@@ -5,11 +5,10 @@
     Также, можно перемещать и менять размеры данной области.
     Используется скрипт прямоугольника.
     Строка автоматически переходит на новую, если она достигла границы области.
-    Если текст выходит больше, чем заданные границы области, то в эту область добавляется опция прокручивания.
     Также, при помощи панели опций можно менять сам шрифт, размер шрифта, цвет.
     По умолчанию параметры:
     шрифт— Arial;
-    размер шрифта— 13pt;
+    размер шрифта— 12pt;
     цвет—черный.
     Редактировать текст можно только при выборе опции курсора или текста.
     В дополнение, имеется возможность использовать горячие сочетания клавиш:
@@ -26,7 +25,7 @@ const createSVG_Text = (f = 'none', s = '#000000', sw = '3', so = '1', fo = '1')
     const textForeignObject = createSVGElem('foreignObject', f, s ,sw, so, fo);
     const textDiv = document.createElement('div');
     textDiv.setAttribute('contenteditable', true);
-    textDiv.style.overflow = 'auto';
+    textDiv.style.overflow = 'hidden';
     textDiv.style.overflowWrap = 'break-word';
     textDiv.style.wordWrap = 'break-word';
     textDiv.textContent = 'Enter your text';
@@ -58,7 +57,7 @@ class TextBox extends Figure {
         tbox.div.style.fontFamily = options[0].value;
         tbox.div.style.fontSize = '13pt';
 
-        optionsText.getElementsByTagName('input')[1].value = '13';
+        optionsText.getElementsByTagName('input')[1].value = '12';
         optionsText.getElementsByTagName('input')[2].value = 'Черный';
         tbox.rect.center.setCoords(tbox.rect.c);
         tbox.synchronizeWithRect();
@@ -94,6 +93,7 @@ class TextBox extends Figure {
                 if(svgPanel.compareDocumentPosition(tbox.rect.svgFig) & 16) {
                     svgPanel.removeChild(tbox.rect.svgFig);
                     tbox.rect.hideRefPoints();
+                    tbox.hideOrShow();
                 }
                 tbox.div.setAttribute('contenteditable', 'false');
                 tbox.div.style.webkitTouchCallout = 'none';
@@ -104,46 +104,13 @@ class TextBox extends Figure {
                 tbox.div.style.userSelect = 'none';
             }
         });
-    }
-
-    hideOrShow(isShowing = true) {
-        currentFigure = this;
-
-        const check = ( () => {
-            return this.refPoints !== undefined && !this.somePointTaken && !someFigureTaken;
-        }).bind(this);
-
-        const hide = ( () => {
-            if (isShowing && this.refPoints !== undefined) {
-                this.hideRefPoints();
-                if (currentFigure == this) {
-                    if (cursor.checked) {
-                        hideAllOptions();
-                    }
-                    currentFigure = null;
+        tbox.div.addEventListener('click', () => {
+            if(!cursor.checked) {
+                if(svgPanel.compareDocumentPosition(tbox.rect.svgFig) & 16) {
+                    svgPanel.removeChild(tbox.rect.svgFig);
+                    tbox.rect.hideRefPoints();
+                    tbox.hideOrShow();
                 }
-                isShowing = false;
-            }
-        } ).bind(this);
-        drawPanel.addEventListener('mousedown', hide);
-
-        this.svgFig.addEventListener('mousedown', ( () => {
-            if (check() && !isShowing && (text.checked || cursor.checked)) {
-                this.showRefPoints();
-                this.showOptions();
-                currentFigure = this;
-                isShowing = true;
-            }
-        } ).bind(this));
-
-        this.svgFig.addEventListener('mouseover', () => {
-            if (check()) {
-                drawPanel.removeEventListener('mousedown', hide);
-            }
-        });
-        this.svgFig.addEventListener('mouseout', () => {
-            if (check()) {
-                drawPanel.addEventListener('mousedown', hide);
             }
         });
     }
@@ -218,36 +185,46 @@ drawPanel.addEventListener('mousedown', TextBox.draw = TextBox.draw.bind(TextBox
     }
 
     selectors[0].addEventListener("mousedown", (evt) => {
-      inputs[0].value = evt.target.innerHTML;
-      document.execCommand('fontname', false, inputs[0].value);
+        inputs[0].value = evt.target.innerHTML;
+        evt.preventDefault();
+        document.execCommand('fontname', false, inputs[0].value);
     });
 
     const changeFont = (fontSizeValue) => {
-        document.execCommand("fontSize", false, "7");
-        const fontElements = document.getElementsByTagName("font");
-        for (let i = 0, len = fontElements.length; i < len; i++) {
-            if (fontElements[i].size == "7") {
-                fontElements[i].removeAttribute("size");
-                fontElements[i].style.fontSize = fontSizeValue + 'pt';
-            }
-        }
+        let browserFontSizeValue = '';
+        if(fontSizeValue == 7) {
+            browserFontSizeValue += 1;
+        } else if(fontSizeValue == 10) {
+            browserFontSizeValue += 2;
+        } else if(fontSizeValue == 12) {
+            browserFontSizeValue += 3;
+        } else if(fontSizeValue == 14) {
+            browserFontSizeValue += 4;
+        } else if(fontSizeValue == 18) {
+            browserFontSizeValue += 5;
+        } else if(fontSizeValue == 22) {
+            browserFontSizeValue += 6;
+        } else browserFontSizeValue += 7;
+        document.execCommand("fontSize", false, browserFontSizeValue);
     }
 
     selectors[1].addEventListener("mousedown", (evt) => {
-      inputs[1].value = evt.target.innerHTML;
-      changeFont(inputs[1].value);
+        inputs[1].value = evt.target.innerHTML;
+        evt.preventDefault();
+        changeFont(inputs[1].value);
     });
 
     selectors[2].addEventListener("mousedown", (evt) => {
-      inputs[2].value = evt.target.innerHTML;
-      let color = 'black';
-      if(inputs[2].value[0] == "К") {
-          color = 'red';
-      }else if(inputs[2].value[0] == "С") {
-          color = 'blue';
-      }else if(inputs[2].value[0] == "З") {
-          color = 'green';
-      }
-      document.execCommand('forecolor', false, color);
+        inputs[2].value = evt.target.innerHTML;
+        let color = 'black';
+        if(inputs[2].value[0] == "К") {
+            color = 'red';
+        }else if(inputs[2].value[0] == "С") {
+            color = 'blue';
+        }else if(inputs[2].value[0] == "З") {
+            color = 'green';
+        }
+        evt.preventDefault();
+        document.execCommand('forecolor', false, color);
     });
 }
