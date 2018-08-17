@@ -11,6 +11,7 @@
         В панеле опций для фигуры можно выбрать толщину ребер, цвет ребер, наличие
     заливки, ее цвет(если она есть), прозрачность.
     Добавленные возможности "Курсора":
+        Фигуру можно перемещать путем зажатия ЛКМ над ней.
         Возможность перемещать и удалять опорные точки:
     Для перемещения точки необходимо захватить ее одним кликом ЛКМ, затем
     переместить и снова кликнуть ЛКМ. Для удаления нужно нажать на опорную точку ПКМ.
@@ -25,6 +26,7 @@ class Polyline extends Figure {
         this.tmpLine = null;
 
         this.addPoint = this.addPoint.bind(this);
+        this.movePolyline = this.movePolyline.bind(this);
         this.moveTmpLine = this.moveTmpLine.bind(this);
         this.finish = this.finish.bind(this);
         this.finishByLeftPanel = this.finishByLeftPanel.bind(this);
@@ -114,6 +116,7 @@ class Polyline extends Figure {
     }
 
     finish() {
+        this.svgFig.addEventListener('mousedown', this.movePolyline);
         drawPanel.removeEventListener('click', this.addPoint);
         drawPanel.addEventListener('click', Polyline.draw);
         document.removeEventListener('mousemove', this.moveTmpLine);
@@ -122,7 +125,7 @@ class Polyline extends Figure {
         delete this.tmpLine;
         this.finished = true;
         someFigureTaken = false;
-        this.hideOrShow((this.refPoints.length != 1) ? true : false);
+        this.hideOrShow();
     }
 
     takePoint(event) {
@@ -152,6 +155,7 @@ class Polyline extends Figure {
             this.deleteTmpCopy();
             this.somePointTaken = someFigureTaken = false;
             document.removeEventListener('mousemove', movePoint);
+            document.removeEventListener('keydown', returnToOld);
             this.refPoints[ind].circle.addEventListener('click', this.takePoint);
             this.refPoints[ind].circle.addEventListener('contextmenu', this.deletePoint);
             this.refPoints[ind].circle.removeEventListener('click', fixPoint);
@@ -159,16 +163,21 @@ class Polyline extends Figure {
         };
 
         const stopMovingByLeftPanel = () => {
-            if (cursor.checked && this.somePointTaken) {
-                movePoint(event);
-                this.refPoints[ind].circle.dispatchEvent(event);
-                this.refPoints[ind].circle.dispatchEvent(new Event('mouseout'));
+            movePoint(event);
+            this.refPoints[ind].circle.dispatchEvent(event);
+            this.refPoints[ind].circle.dispatchEvent(new Event('mouseout'));
+        };
+
+        const returnToOld = (e) => {
+            if (e.keyCode == 27) {
+                stopMovingByLeftPanel();
             }
         };
 
-        this.createTmpCopy(ind);
+        this.createTmpPartCopy(ind);
         this.somePointTaken = someFigureTaken = true;
         document.addEventListener('mousemove', movePoint);
+        document.addEventListener('keydown', returnToOld);
         this.refPoints[ind].circle.removeEventListener('click', this.takePoint);
         this.refPoints[ind].circle.removeEventListener('contextmenu', this.deletePoint);
         this.refPoints[ind].circle.addEventListener('click', fixPoint);
@@ -209,6 +218,50 @@ class Polyline extends Figure {
         this.svgFig.dispatchEvent(new Event('mouseout'));
     }
 
+    movePolyline(event) {
+        if (!cursor.checked || this.somePointTaken || someFigureTaken || !this.isShowing) {
+            return;
+        }
+
+        const clicked = getMouseCoords(event);
+        const old = [];
+        for (let i = 0; i < this.refPoints.length; i++) {
+            old.push({ x: this.refPoints[i].x, y: this.refPoints[i].y });
+        }
+
+        const move = (e) => {
+            const coords = getMouseCoords(e);
+            const dx = coords.x - clicked.x, dy = coords.y - clicked.y;
+            for (let i = 0; i < this.refPoints.length; i++) {
+                const point = { x: old[i].x + dx, y: old[i].y + dy };
+                this.refPoints[i].setCoords(point);
+            }
+        };
+
+        const stopMoving = () => {
+            this.deleteTmpCopy();
+            this.somePointTaken = someFigureTaken = false;
+            this.svgFig.addEventListener('mousedown', this.movePolyline);
+            document.removeEventListener('mousemove', move);
+            document.removeEventListener('keydown', returnToOld);
+            drawPanel.removeEventListener('mouseup', stopMoving);
+        };
+
+        const returnToOld = (e) => {
+            if (e.keyCode == 27) {
+                move(event);
+                stopMoving();
+            }
+        };
+
+        this.createTmpCopy();
+        this.somePointTaken = someFigureTaken = true;
+        this.svgFig.removeEventListener('mousedown', this.movePolyline);
+        document.addEventListener('mousemove', move);
+        document.addEventListener('keydown', returnToOld);
+        drawPanel.addEventListener('mouseup', stopMoving);
+    }
+
     isClosed() {
         return this.refPoints[0].equals(this.refPoints[this.refPoints.length - 1]);
     }
@@ -239,7 +292,7 @@ class Polyline extends Figure {
         this.moveEndOfTmpLine(getMouseCoords(event));
     }
 
-    createTmpCopy(indOfTaken) {
+    createTmpPartCopy(indOfTaken) {
         this.copy = createSVGElem('polyline', 'none', '#000000', '1', '0.5', '0.5');
         svgPanel.insertBefore(this.copy, this.svgFig);
 
@@ -256,6 +309,12 @@ class Polyline extends Figure {
         } else {
             appendAll(this.refPoints.length - 1, this.refPoints.length - 2);
         }
+    }
+
+    createTmpCopy(indOfTaken) {
+        this.copy = createSVGElem('polyline', 'none', '#000000', '1', '0.5', '0.5');
+        svgPanel.insertBefore(this.copy, this.svgFig);
+        this.copy.setAttribute('points', this.svgFig.getAttribute('points'));
     }
 
     showOptions() {
