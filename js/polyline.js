@@ -208,9 +208,10 @@ class Polyline extends Figure {
             svgPanel.removeChild(this.refPoints[0].circle);
             this.svgFig.points.removeItem(0);
             svgPanel.removeChild(this.svgFig);
-            this.refPoints = undefined;
+            this.svgFig = null;
             hideAllOptions();
             currentFigure = null;
+            return;
         } else if (this.refPoints.length == 3 && this.isClosed()) {
             this.svgFig.points.removeItem(2);
             this.refPoints.splice(2, 1);
