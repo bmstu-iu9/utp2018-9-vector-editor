@@ -15,7 +15,7 @@ cursor.addEventListener('click', () => {
 
 /* Удаление выделенной фигуры при помощи клавиши Delete: */
 document.addEventListener('keydown', (e) => {
-    if (e.keyCode == 46 && currentFigure !== null && currentFigure.somePointTaken == false) {
+    if (e.keyCode == 46 && currentFigure !== null && !currentFigure.somePointTaken && !someFigureTaken) {
         showOptions();
         currentFigure.hideRefPoints();
         svgPanel.removeChild(currentFigure.svgFig);

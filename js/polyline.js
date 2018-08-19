@@ -38,6 +38,20 @@ class Polyline extends Figure {
         this.isClosed = this.isClosed.bind(this);
     }
 
+    static create(svgFigure) {
+        const pl = new Polyline(svgFigure);
+        for (let i = 0; i < svgFigure.points.numberOfItems; i++) {
+            const rp = new PolylinePoint(pl, svgFigure.points[i]);
+            rp.svgPoint = svgFigure.points[i];
+            pl.refPoints.push(rp);
+        }
+        pl.finish(false);
+        svgPanel.appendChild(pl.svgFig);
+        pl.isShowing = false;
+        currentFigure = null;
+        return pl;
+    }
+
     static draw(event) {
         if (!pen.checked) {
             return;
@@ -50,7 +64,7 @@ class Polyline extends Figure {
         svgPanel.appendChild(pl.svgFig);
         svgPanel.appendChild(pl.tmpLine);
         someFigureTaken = true;
-        currentFigure = this;
+        currentFigure = pl;
 
         pl.addPoint(event);
         drawPanel.addEventListener('click', pl.addPoint);
@@ -110,14 +124,16 @@ class Polyline extends Figure {
         }
     }
 
-    finish() {
+    finish(hasTmpLine = true) {
         this.svgFig.addEventListener('mousedown', this.movePolyline);
         drawPanel.removeEventListener('click', this.addPoint);
         drawPanel.addEventListener('click', Polyline.draw);
         document.removeEventListener('mousemove', this.moveTmpLine);
         leftPanel.removeEventListener('click', this.finishByLeftPanel);
-        svgPanel.removeChild(this.tmpLine);
-        delete this.tmpLine;
+        if (hasTmpLine) {
+            svgPanel.removeChild(this.tmpLine);
+            delete this.tmpLine;
+        }
         this.finished = true;
         someFigureTaken = false;
         this.hideOrShow();
@@ -280,9 +296,11 @@ class Polyline extends Figure {
 
         if (indOfTaken > 0 && indOfTaken < this.refPoints.length - 1) {
             appendAll(indOfTaken - 1, indOfTaken, indOfTaken + 1);
-        } else if (this.isClosed()) {
+        } else if (this.isClosed() && indOfTaken == 0) {
             appendAll(1, 0, this.refPoints.length - 1);
-        } else if (indOfTaken == 0) {
+        } else if (this.isClosed() && indOfTaken == this.refPoints.length - 1) {
+            appendAll(0, this.refPoints.length - 1, this.refPoints.length - 2);
+        }else if (indOfTaken == 0) {
             appendAll(0, 1);
         } else {
             appendAll(this.refPoints.length - 1, this.refPoints.length - 2);
