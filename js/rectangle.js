@@ -22,6 +22,20 @@ class Rectangle extends Figure {
         this.findIndexMerged = this.findIndexMerged.bind(this);
     }
 
+    static create(svgFigure) {
+        const rectangle = new Rectangle(svgFigure);
+        const get = attr => svgFigure.getAttribute(attr);
+        rectangle.setAttrs([get('x'), get('y'), get('width'), get('height')]);
+        rectangle.r = get('rx');
+        rectangle.updateRefPointsCoords();
+        rectangle.hideOrShow();
+        svgPanel.appendChild(rectangle.svgFig);
+        rectangle.isShowing = false;
+        rectangle.finished = true;
+        currentFigure = null;
+        return rectangle;
+    }
+
     static draw(event) {
         if (!rect.checked) {
             return;

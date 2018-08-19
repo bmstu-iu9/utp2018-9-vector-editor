@@ -9,8 +9,8 @@
 'use strict';
 
 class Polygon extends Figure {
-    constructor(svgFig, angles) {
-        super(svgFig);
+    constructor(svgFigure, angles) {
+        super(svgFigure);
         this.n = +angles;
         this.r = -1;
         this.center = new PolygonPoint(this, { x: 0, y: 0 }, -1);
