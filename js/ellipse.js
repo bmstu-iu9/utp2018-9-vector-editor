@@ -10,9 +10,18 @@ class Ellipse extends Figure {
     }
 
     static create(svgFigure) {
-        const ell = new Ellipse(svgFigure);
         const get = attr => svgFigure.getAttribute(attr);
-        const [cx, cy, width, height] = [+get('cx'), +get('cy'), 2*get('rx'), 2*get('ry')];
+        let fig = svgFigure, cx, cy, width, height;
+        [cx, cy] = [+get('cx'), +get('cy')];
+        if (svgFigure.tagName == 'circle') {
+            fig = createSVGElem('ellipse');
+            copySVGStyle(fig, svgFigure);
+            width = height = 2*get('r');
+        } else {
+            [width, height] = [2*get('rx'), 2*get('ry')];
+        }
+
+        const ell = new Ellipse(fig);
         ell.rect.setAttrs([cx - width/2, cy - height/2, width, height]);
         ell.synchronizeWithRect();
         ell.finish();
