@@ -64,7 +64,6 @@ const crsr = document.getElementById('cursor');
       dy=getMouseCoords(event).y-y;
       x=getMouseCoords(event).x;
       y=getMouseCoords(event).y;
-      console.log(dx,dy);
       return {dx,dy};
 };
 
@@ -85,12 +84,10 @@ const crsr = document.getElementById('cursor');
       drawPanel.addEventListener('mouseup',up);
       x=getMouseCoords(event).x;
       y=getMouseCoords(event).y;
-      console.log(x,y);
   };
 
   const movePath=(event)=>{
       if(pathTaken) {
-          console.log('ALO');
           path = currentPath.getAttribute('d').split(' ').map(Number).filter(Boolean);
           changePath(deltaMouse(), path);
           let p = 'M ' + path.slice(0, 2).join(' ') + ' L ' + path.slice(2).join(' ');
