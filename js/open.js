@@ -6,7 +6,7 @@ function handleFileSelect(evt) {
         svgPanel = document.getElementById('svg-panel');
         let recs = svgPanel.getElementsByTagName('rect');
         let ells = svgPanel.getElementsByTagName('ellipse');
-        let pols = svgPanel.getElementsByTagName('polyline');
+        let pols = svgPanel.getElementsByTagName('polygon');
         let circles = svgPanel.getElementsByTagName('circle');
         while (circles.length>0){
             svgPanel.removeChild(circles[0]);
@@ -14,9 +14,9 @@ function handleFileSelect(evt) {
         for (let i=0;i<recs.length;i++)
             Rectangle.create(recs[i]);
         for (let i=0;i<ells.length;i++)
-            Ellipse.create(recs[i]);
+            Ellipse.create(ells[i]);
         for (let i=0;i<pols.length;i++)
-            Polyline.create(recs[i]);
+            Polyline.create(pols[i]);
     };
     reader.readAsText(f);
 }
