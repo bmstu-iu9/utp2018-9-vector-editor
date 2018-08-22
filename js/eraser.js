@@ -6,6 +6,7 @@ let isErasing = false;
 let end, strt, type, value, index = 0, Path1, Path2, currentPath;
 
 const startErasing = () => {
+
     if (!eraser.checked)
         return;
     isErasing = true;
@@ -120,7 +121,7 @@ const erase = (event) => {
             width = event.target.getAttribute('stroke-width');
             type = event.target.getAttribute('stroke-linecap');
             linejoin = event.target.getAttribute('stroke-linejoin');
-            parseP(getMouseCoords(event).x, getMouseCoords(event).y, event.target.getAttribute('d').split(' ').map(Number).filter(Boolean));
+            parseP(getMouseCoords(event).x, getMouseCoords(event).y, event.target.getAttribute('d').split(' ').map(parseFloat).filter(Number));
             if (index !== -1) {
                 currentPath.remove();
                 if (strt !== 1 && Path1[Path1.length - 1] !== ' ' && pathLength(Path1.split(' ').map(Number).filter(Boolean)) > 2) {

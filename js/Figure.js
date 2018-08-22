@@ -52,16 +52,19 @@ class Figure {
     }
 
     hideOrShow() {
-        this.isShowing = true;
-        currentFigure = this;
 
+        this.isShowing = true;
+
+        currentFigure = this;
         const check = ( () => {
             return this.svgFig !== null && !this.somePointTaken && !someFigureTaken;
         }).bind(this);
 
         const hide = ( () => {
+
             if (this.isShowing && this.svgFig !== null) {
                 this.hideRefPoints();
+
                 if (currentFigure == this) {
                     if (cursor.checked) {
                         hideAllOptions();
@@ -75,6 +78,7 @@ class Figure {
 
         this.svgFig.addEventListener('mousedown', ( () => {
             if (check() && !this.isShowing && cursor.checked) {
+                console.log('show');
                 this.showRefPoints();
                 this.showOptions();
                 currentFigure = this;
