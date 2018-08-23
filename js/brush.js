@@ -110,13 +110,25 @@ const crsr = document.getElementById('cursor');
               this.synchronizeWithRect();
           };
 
-          this.rect.createTmpCopy=()=>{};
-          this.rect.deleteTmpCopy=()=>{};
+          this.rect.createTmpCopy = this.createTmpCopy.bind(this);
+          this.rect.deleteTmpCopy = this.deleteTmpCopy.bind(this);
           this.finished = this.rect.finished = true;
       }
 
+      createTmpCopy() {
+          this.copy = document.createElementNS(svgNS, "path");
+          this.copy.setAttribute('d', this.svgFig.getAttribute('d'));
+          this.copy.setAttribute('fill', this.svgFig.getAttribute('fill'));
+          this.copy.setAttribute('stroke-width', this.svgFig.getAttribute('stroke-width'));
+          this.copy.setAttribute('stroke', '#000000');
+          this.copy.setAttribute('stroke-linecap', this.svgFig.getAttribute('stroke-linecap'));
+          this.copy.setAttribute('stroke-linejoin', this.svgFig.getAttribute('stroke-linejoin'));
+          svgPanel.insertBefore(this.copy, this.svgFig);
+
+      }
+
       showOptions(){}
-      createTmpCopy(){}
+
       showRefPoints() {
 
           svgPanel.appendChild(this.rect.svgFig);
