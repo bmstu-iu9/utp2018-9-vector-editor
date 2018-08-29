@@ -1,4 +1,10 @@
-function handleFileSelect(evt) {
+'use strict';
+
+/*
+    Скрипт для открытия файла.
+*/
+
+const openFile=(evt)=> {
     let f = evt.target.files[0];
     let reader = new FileReader();
     reader.onload = function(e) {
@@ -10,6 +16,7 @@ function handleFileSelect(evt) {
         let circles = svgPanel.getElementsByTagName('circle');
         let text = svgPanel.getElementsByTagName('foreignObject');
         let brush = svgPanel.getElementsByTagName('path');
+        let lines = svgPanel.getElementsByTagName('line');
         while (circles.length>0){
             svgPanel.removeChild(circles[0]);
         }
@@ -21,9 +28,12 @@ function handleFileSelect(evt) {
             Polyline.create(pols[i]);
         for (let i=0;i<brush.length;i++)
             BrushBox.create(brush[i]);
-        TextBox.create(text[0]);
-
+        for (let i=0;i<lines.length;i++)
+            Line.create(lines[i]);
+        for (let i=0;i<text.length;i++)
+            TextBox.create(text[i]);
     };
     reader.readAsText(f);
-}
-document.getElementById('file-input').addEventListener('change', handleFileSelect);
+};
+
+document.getElementById('file-input').addEventListener('change', openFile);

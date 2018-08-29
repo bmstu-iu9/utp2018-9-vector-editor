@@ -1,5 +1,7 @@
 'use strict';
-
+/*
+    Скрипт для инструмента ластик.
+*/
 
 let eraser = document.getElementById('eraser');
 let isErasing = false;

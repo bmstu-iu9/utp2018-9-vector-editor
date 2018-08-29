@@ -1,5 +1,8 @@
 'use strict';
-  
+
+/*
+    Скрипт для инструмента кисть.
+*/
 
 let dx,dy,shape,x,y,path,pathTaken = false;
 let isDrawing=false;

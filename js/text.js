@@ -52,30 +52,24 @@ class TextBox extends Figure {
         tbox.rect.center.setCoords(tbox.rect.c);
         tbox.synchronizeWithRect();
         svgPanel.appendChild(tbox.svgFig);
-
         for (let i = 0; i < tbox.rect.refPoints.length; i++) {
             tbox.rect.refPoints[i].figure = tbox;
         }
         tbox.rect.center.figure = tbox;
-
         tbox.rect.updateRefPointsCoords();
         tbox.hideOrShow();
         tbox.showRefPoints();
-
         ['click', 'mouseover', 'mouseout'].forEach(e => {
             tbox.svgFig.addEventListener(e, () => tbox.rect.svgFig.dispatchEvent(new Event(e)));
         });
-
         const update = tbox.rect.updateRefPointsCoords.bind(tbox.rect);
         tbox.rect.updateRefPointsCoords = () => {
             update();
             tbox.synchronizeWithRect();
         };
-
         tbox.rect.createTmpCopy = tbox.createTmpCopy.bind(tbox);
         tbox.rect.deleteTmpCopy = tbox.deleteTmpCopy.bind(tbox);
         tbox.finished = tbox.rect.finished = true;
-
         document.addEventListener('click', () =>  {
             if(text.checked || cursor.checked) {
                 tbox.div.setAttribute('contenteditable', 'true');

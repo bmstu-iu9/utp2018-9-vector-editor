@@ -66,7 +66,7 @@ class Figure {
                 this.hideRefPoints();
 
                 if (currentFigure == this) {
-                    if (cursor.checked) {
+                    if (cursor. checked) {
                         hideAllOptions();
                     }
                     currentFigure = null;
