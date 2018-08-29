@@ -19,7 +19,7 @@ let someFigureTaken = false;
 
 const drawPanel = document.getElementById('draw-panel');
 const leftPanel = document.getElementById('left-panel');
-const svgPanel = document.getElementById('svg-panel');
+let svgPanel = document.getElementById('svg-panel');
 const svgNS = 'http://www.w3.org/2000/svg';
 
 /*Добавление всех инструментов в массив и присваивание обработчиков*/
