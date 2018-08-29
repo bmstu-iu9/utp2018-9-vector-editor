@@ -14,8 +14,9 @@
         <button class="button">
           <i class="fa fa-plus-square" aria-hidden="true"></i>
         </button>
-        <button class="button">
-          <i class="fa fa-folder" aria-hidden="true"></i>
+        <button class="button" onclick="document.getElementById('file-input').click();">
+            <input id="file-input" accept="image/svg+xml" type="file" name="name" style="display: none;" />
+            <i class="fa fa-folder" aria-hidden="true"></i>
         </button>
         <button class="button">
           <i class="fa fa-download" aria-hidden="true"></i>
@@ -249,7 +250,7 @@
           <div id="options-brush">
               <div class="selector">
                   <span class="selector-label">Размер кисти, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
+                  <input style="width: 35px;" type="text" class="selector-field" id="brush_width"/>
                   <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
                   <ul class="selector-ul">
                       <li class="selector-li">1</li>
@@ -267,7 +268,7 @@
           <div id="options-eraser">
               <div class="selector">
                   <span class="selector-label">Размер ластика, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
+                  <input style="width: 35px;" type="text" class="selector-field" id="eraser_width"/>
                   <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
                   <ul class="selector-ul">
                       <li class="selector-li">4</li>
@@ -360,5 +361,6 @@
     <script src="js/eraser.js"></script>
     <script src="js/text.js"></script>
     <script src="js/line.js"></script>
+    <script src="js/open.js"></script>
   </body>
 </html>

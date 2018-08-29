@@ -40,6 +40,66 @@ class TextBox extends Figure {
         this.rect = new Rectangle(createSVGElem('rect', 'none', '#0000FF', '1', '0.5'), rect);
     }
 
+    static create(TextObject) {
+        const get = attr => TextObject.getAttribute(attr);
+        let tbox = new TextBox(TextObject);
+        tbox.div=TextObject.getElementsByTagName('div')[0];
+        tbox.rect.height=TextObject.getAttribute('height');
+        tbox.rect.width=TextObject.getAttribute('width');
+        tbox.rect.x=get('x');
+        tbox.rect.y=get('y');
+        tbox.rect.center.setCoords(tbox.rect.c);
+        tbox.rect.center.setCoords(tbox.rect.c);
+        tbox.synchronizeWithRect();
+        svgPanel.appendChild(tbox.svgFig);
+        for (let i = 0; i < tbox.rect.refPoints.length; i++) {
+            tbox.rect.refPoints[i].figure = tbox;
+        }
+        tbox.rect.center.figure = tbox;
+        tbox.rect.updateRefPointsCoords();
+        tbox.hideOrShow();
+        tbox.showRefPoints();
+        ['click', 'mouseover', 'mouseout'].forEach(e => {
+            tbox.svgFig.addEventListener(e, () => tbox.rect.svgFig.dispatchEvent(new Event(e)));
+        });
+        const update = tbox.rect.updateRefPointsCoords.bind(tbox.rect);
+        tbox.rect.updateRefPointsCoords = () => {
+            update();
+            tbox.synchronizeWithRect();
+        };
+        tbox.rect.createTmpCopy = tbox.createTmpCopy.bind(tbox);
+        tbox.rect.deleteTmpCopy = tbox.deleteTmpCopy.bind(tbox);
+        tbox.finished = tbox.rect.finished = true;
+        document.addEventListener('click', () =>  {
+            if(text.checked || cursor.checked) {
+                tbox.div.setAttribute('contenteditable', 'true');
+            } else {
+                if(svgPanel.compareDocumentPosition(tbox.rect.svgFig) & 16) {
+                    svgPanel.removeChild(tbox.rect.svgFig);
+                    tbox.rect.hideRefPoints();
+                    tbox.hideOrShow();
+                }
+                tbox.div.setAttribute('contenteditable', 'false');
+                tbox.div.style.webkitTouchCallout = 'none';
+                tbox.div.style.webkitUserSelect = 'none';
+                tbox.div.style.khtmlUserSelect = 'none';
+                tbox.div.style.mozUserSelect = 'none';
+                tbox.div.style.msUsertSelect = 'none';
+                tbox.div.style.userSelect = 'none';
+            }
+        });
+        tbox.div.addEventListener('click', () => {
+            if(!cursor.checked) {
+                if(svgPanel.compareDocumentPosition(tbox.rect.svgFig) & 16) {
+                    svgPanel.removeChild(tbox.rect.svgFig);
+                    tbox.rect.hideRefPoints();
+                    tbox.hideOrShow();
+                }
+            }
+        });
+        return tbox;
+    }
+
     static draw(event) {
         if (!text.checked || (svgPanel.getElementsByTagName('foreignObject')[0] && !event.ctrlKey) ) {
             return;
