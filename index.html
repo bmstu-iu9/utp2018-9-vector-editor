@@ -11,14 +11,14 @@
     <header>
       <p id="logo"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i><b>svgEditor</b></p>
       <div class="top-buttons-group">
-        <button class="button">
+        <button id="creature" class="button" onclick="createSVGPanel()">
           <i class="fa fa-plus-square" aria-hidden="true"></i>
         </button>
         <button class="button" onclick="document.getElementById('file-input').click();">
             <input id="file-input" accept="image/svg+xml" type="file" name="name" style="display: none;" />
             <i class="fa fa-folder" aria-hidden="true"></i>
         </button>
-        <button class="button">
+        <button class="button" onclick="saveSVG()">
           <i class="fa fa-download" aria-hidden="true"></i>
         </button>
       </div>
@@ -362,5 +362,7 @@
     <script src="js/text.js"></script>
     <script src="js/line.js"></script>
     <script src="js/open.js"></script>
+    <script src="js/save.js"></script>
+    <script src="js/creature.js"></script>
   </body>
 </html>
