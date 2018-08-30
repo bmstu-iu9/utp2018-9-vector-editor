@@ -1,0 +1,249 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  height: 100%;
+}
+ul {
+  list-style: none;
+}
+input[type="radio"] {
+  display:none;
+}
+header {
+  width: 100%;
+  height: 45px;
+  background-color: #06121b;
+  display: flex;
+  position: fixed;
+  z-index: 5;
+}
+main {
+  height: 100%;
+  display: flex;
+}
+#left-panel {
+  width: 45px;
+  height: 100%;
+  margin-top: 45px;
+  background-color: #01121d;
+  position: fixed;
+  z-index: 5;
+}
+#back-panel {
+  width: 100%;
+  height: 100%;
+  background-color: #a7a7a7;
+  display: flex;
+}
+#draw-panel {
+  margin: auto;
+  background-color: #fff;
+  box-shadow: 0px 0px 15px 0px #5a5a5a;
+  z-index: 0;
+  /*left: 0;*/
+}
+input[type="radio"] + label {
+  width: 45px;
+  height: 45px;
+  background-color: #06121b;
+  color: #fff;
+  border: none;
+  outline: none;
+  display: flex;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+input[type="radio"]:hover + label {
+  background-color: #144871;
+}
+input[type="radio"]:checked + label {
+  background-color: #082e4c;
+}
+input[type="radio"] + label i {
+  margin: auto;
+}
+.button {
+  width: 45px;
+  height: 45px;
+  background-color: #06121b;
+  color: #fff;
+  border: none;
+  outline: none;
+  display: block;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: #144871;
+}
+.button:focus-within {
+  background-color: #082e4c;
+}
+#button-color {
+  color: #f00;
+}
+#logo {
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13pt;
+  margin: auto 15px;
+  cursor: pointer;
+}
+#logo i {
+  transition: 0.3s;
+}
+#logo:hover i {
+  transform: rotate(90deg);
+}
+#logo b {
+  margin-left: 5px;
+}
+.top-buttons-group {
+  display: flex;
+}
+main ul li {
+  position: relative;
+}
+main ul li a {
+  display: block;
+}
+main li ul {
+  position: absolute;
+  left: 47px;
+  top: 0;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  background-color: #082e4c;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 10pt;
+  border-radius: 5px;
+  transition: 0.3s;
+  z-index: 10;
+}
+main li:focus-within ul {
+  visibility: visible;
+  opacity: 1;
+}
+.vertical-menu input[type="radio"] + label {
+  width: auto;
+  height: auto;
+  display: block;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.vertical-menu input[type="radio"]:hover + label {
+  background-color: #144871;
+}
+.vertical-menu input[type="radio"]:checked + label {
+  background-color: #082e4c;
+}
+.vertical-menu input[type="radio"] + label i {
+  display: inline;
+  margin-right: 5px;
+}
+#selected-instrument-block {
+  margin-left: 10px;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 10pt;
+  display: flex;
+}
+#selected-instrument-block b {
+  margin: auto;
+  line-height: 100%;
+}
+#selected-instrument-block #selected-instrument {
+  margin-left: 5px;
+  color: #05b5b5;
+}
+.selector {
+    margin: auto 0px auto 10px;
+    display: flex;
+    height: 25px;
+    background-color: #05b5b5;
+    border-radius: 10px;
+    justify-content: flex-end;
+}
+.selector-label {
+    margin: auto 0 auto 10px;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    font-size: 10pt;
+}
+.selector-field {
+    margin: auto 0 auto 5px;
+    height: 25px;
+    border: none;
+    background-color: #009898;
+    color: #fff;
+    text-align: right;
+    font-size: 10pt;
+    padding: 0 10px 0 10px;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+}
+.selector-button {
+    margin: auto 0 auto 0;
+    height: 25px;
+    width: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    border-radius: 0 10px 10px 0;
+}
+.selector-button:hover {
+    background-color: #0cd8d8;
+}
+.selector-button:active {
+    background-color: #009898;
+}
+.selector-ul {
+    position: absolute;
+    top: 40px;
+    background-color: #005b86;
+    border-radius: 5px;
+    text-align: right;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+.selector-li {
+    color: #fff;
+    padding: 5px 10px;
+    transition: 0.3s;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    font-size: 10pt;
+}
+.selector-li:hover {
+    background-color: #0077af;
+}
+.selector button:focus + ul {
+    visibility: visible;
+    opacity: 1;
+}
+header div {
+    display: flex;
+}
+#options {
+    /* margin: auto; */
+}
+.show-option {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#options > div {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 10px;
+    right: 100px;
+}
