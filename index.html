@@ -18,7 +18,7 @@
             <input id="file-input" accept="image/svg+xml" type="file" name="name" style="display: none;" />
             <i class="fa fa-folder" aria-hidden="true"></i>
         </button>
-        <button class="button" onclick="saveSVG()">
+        <button id="save" class="button" onclick="saveSVG()">
           <i class="fa fa-download" aria-hidden="true"></i>
         </button>
       </div>
@@ -341,7 +341,8 @@
       </div>
       <div id="back-panel">
         <div id="draw-panel">
-          <svg id="svg-panel" width="900" height="500">
+          <svg id="svg-panel" width="900" height="500"
+            xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
             <!--В этом месте будут теги svg для рисования векторной графики-->
           </svg>
         </div>
