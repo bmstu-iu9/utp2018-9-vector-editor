@@ -135,6 +135,7 @@ const erase = (event) => {
                     shape.setAttribute('stroke-linejoin', linejoin);
                     shape.setAttribute('d', Path1);
                     svgPanel.appendChild(shape);
+                    BrushBox.create(shape);
                 }
                 if (Path2[Path2.length - 1] !== ' ' && end !== 1 && pathLength(Path2.split(' ').map(Number).filter(Boolean)) > 2) {
                     shape = document.createElementNS(svgNS, "path");
@@ -145,6 +146,7 @@ const erase = (event) => {
                     shape.setAttribute('stroke-linejoin', linejoin);
                     shape.setAttribute('d', Path2);
                     svgPanel.appendChild(shape);
+                    BrushBox.create(shape);
                 }
             }
         }

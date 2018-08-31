@@ -17,21 +17,28 @@ const openFile=(evt)=> {
         let text = svgPanel.getElementsByTagName('foreignObject');
         let brush = svgPanel.getElementsByTagName('path');
         let lines = svgPanel.getElementsByTagName('line');
+        for (let i=recs.length-1;i>=0;i--)
+        {
+            if (recs[i].getAttribute('stroke-opacity')==='0.5')
+                svgPanel.removeChild(recs[i]);
+            console.log(recs.length);
+        }
         while (circles.length>0){
             svgPanel.removeChild(circles[0]);
         }
-        for (let i=0;i<recs.length;i++)
+        for (let i=recs.length-1;i>=0;i--)
             Rectangle.create(recs[i]);
-        for (let i=0;i<ells.length;i++)
+        for (let i=ells.length-1;i>=0;i--)
             Ellipse.create(ells[i]);
-        for (let i=0;i<pols.length;i++)
+        for (let i=pols.length-1;i>=0;i--)
             Polyline.create(pols[i]);
-        for (let i=0;i<brush.length;i++)
+        for (let i=brush.length-1;i>=0;i--)
             BrushBox.create(brush[i]);
-        for (let i=0;i<lines.length;i++)
-            Line.create(lines[i]);
-        for (let i=0;i<text.length;i++)
+        for (let i=text.length-1;i>=0;i--)
             TextBox.create(text[i]);
+        for (let i=lines.length-1;i>=0;i--)
+            Line.create(lines[i]);
+
     };
     reader.readAsText(f);
 };

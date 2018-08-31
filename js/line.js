@@ -17,7 +17,7 @@ class Line extends Figure {
         obj.setAttrs([get('x1'), get('y1'), get('x2'), get('y2')]);
         obj.updateRefPointsCoords();
         obj.hideOrShow();
-        svgPanel.appendChild(obj.svgFigure);
+        svgPanel.appendChild(obj.svgFig);
         obj.isShowing = false;
         obj.finished = true;
         currentFigure = null;
