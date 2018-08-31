@@ -17,6 +17,12 @@ const openFile=(evt)=> {
         let text = svgPanel.getElementsByTagName('foreignObject');
         let brush = svgPanel.getElementsByTagName('path');
         let lines = svgPanel.getElementsByTagName('line');
+        for (let i=recs.length-1;i>=0;i--)
+        {
+            if (recs[i].getAttribute('stroke-opacity')==='0.5')
+                svgPanel.removeChild(recs[i]);
+            console.log(recs.length);
+        }
         while (circles.length>0){
             svgPanel.removeChild(circles[0]);
         }
