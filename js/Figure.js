@@ -126,8 +126,8 @@ class RefPoint {
         this.circle = createSVGElem('circle');
         this.circle.setAttribute('r', 3);
         this.circle.setAttribute('cx', coords.x);
+        this.circle.setAttribute('stroke', 'black');
         this.circle.setAttribute('cy', coords.y);
-
         this.circle.addEventListener('mouseover', this.dispatchAndColor.bind(this, 'mouseover', '#0000FF', instrument));
         this.circle.addEventListener('mouseout', this.dispatchAndColor.bind(this, 'mouseout', '#FFFFFF', instrument));
     }
