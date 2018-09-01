@@ -274,17 +274,8 @@ drawPanel.addEventListener('mousedown', TextBox.draw = TextBox.draw.bind(TextBox
         changeFont(inputs[1].value);
     });
 
-    selectors[2].addEventListener("mousedown", (evt) => {
-        inputs[2].value = evt.target.innerHTML;
-        let color = 'black';
-        if(inputs[2].value[0] == "К") {
-            color = 'red';
-        }else if(inputs[2].value[0] == "С") {
-            color = 'blue';
-        }else if(inputs[2].value[0] == "З") {
-            color = 'green';
-        }
+    colorPicker.addEventListener("mousedown", (evt) => {
         evt.preventDefault();
-        document.execCommand('forecolor', false, color);
+        document.execCommand('forecolor', false, paletteColor);
     });
 }
