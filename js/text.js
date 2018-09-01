@@ -118,7 +118,6 @@ class TextBox extends Figure {
         tbox.div.style.fontSize = '13pt';
 
         optionsText.getElementsByTagName('input')[1].value = '12';
-        optionsText.getElementsByTagName('input')[2].value = 'Черный';
         tbox.rect.center.setCoords(tbox.rect.c);
         tbox.synchronizeWithRect();
         svgPanel.appendChild(tbox.rect.svgFig);
