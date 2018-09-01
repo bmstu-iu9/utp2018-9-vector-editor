@@ -11,13 +11,14 @@
     <header>
       <p id="logo"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i><b>svgEditor</b></p>
       <div class="top-buttons-group">
-        <button class="button">
+        <button id="creature" class="button" onclick="createSVGPanel()">
           <i class="fa fa-plus-square" aria-hidden="true"></i>
         </button>
-        <button class="button">
-          <i class="fa fa-folder" aria-hidden="true"></i>
+        <button class="button" onclick="document.getElementById('file-input').click();">
+            <input id="file-input" accept="image/svg+xml" type="file" name="name" style="display: none;" />
+            <i class="fa fa-folder" aria-hidden="true"></i>
         </button>
-        <button class="button">
+        <button id="save" class="button" onclick="saveSVG()">
           <i class="fa fa-download" aria-hidden="true"></i>
         </button>
       </div>
@@ -249,7 +250,7 @@
           <div id="options-brush">
               <div class="selector">
                   <span class="selector-label">Размер кисти, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
+                  <input style="width: 35px;" type="text" class="selector-field" id="brush_width"/>
                   <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
                   <ul class="selector-ul">
                       <li class="selector-li">1</li>
@@ -267,7 +268,7 @@
           <div id="options-eraser">
               <div class="selector">
                   <span class="selector-label">Размер ластика, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
+                  <input style="width: 35px;" type="text" class="selector-field" id="eraser_width"/>
                   <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
                   <ul class="selector-ul">
                       <li class="selector-li">4</li>
@@ -336,11 +337,28 @@
         <label for="pipette"><i class="fa fa-thermometer-empty" aria-hidden="true" style="transform: rotate(225deg);"></i></label>
         <input type="radio" alt="Лупа" id="zoom" name="instruments"/>
         <label for="zoom"><i class="fa fa-search" aria-hidden="true"></i></label>
-        <button class="button"><i id="button-color" class="fa fa-square" aria-hidden="true"></i></button>
+        <button id="button-color" class="button"><i id="color" class="fa fa-square" aria-hidden="true"></i></button>
+        <div id="color-picker" class="cp-default">
+                <div class="picker-wrapper">
+                    <div id="picker" class="picker"></div>
+                    <div id="picker-indicator" class="picker-indicator"></div>
+                </div>
+                <div class="pcr-wrapper">
+                    <div id="pcr" class="pcr"></div>
+                    <div id="pcr-indicator" class="pcr-indicator"></div>
+                </div>
+                <ul id="color-values">
+                    <div id="pcr_bg"></div>
+                    <li><label>RGB:</label><span id="rgb"></span></li>
+                    <li><label>HSV:</label><span id="hsv"></span></li>
+                    <li><label>HEX:</label><span id="hex"></span></li>
+                </ul>
+            </div>
       </div>
       <div id="back-panel">
         <div id="draw-panel">
-          <svg id="svg-panel" width="900" height="500">
+          <svg id="svg-panel" width="900" height="500"
+            xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
             <!--В этом месте будут теги svg для рисования векторной графики-->
           </svg>
         </div>
@@ -359,5 +377,29 @@
     <script src="js/brush.js"></script>
     <script src="js/eraser.js"></script>
     <script src="js/text.js"></script>
+    <script src="js/line.js"></script>
+    <script src="js/open.js"></script>
+    <script src="js/save.js"></script>
+    <script src="js/creature.js"></script>
+    <script src="js/colorpicker.js"></script>
+    <script type="text/javascript">
+        cp = ColorPicker(document.getElementById('pcr'), document.getElementById('picker'),
+            function(hex, hsv, rgb, mousePicker, mousepcr) {
+                currentColor = hex;
+                paletteColor = currentColor;
+                ColorPicker.positionIndicators(
+                    document.getElementById('pcr-indicator'),
+                    document.getElementById('picker-indicator'),
+                    mousepcr, mousePicker);
+
+                document.getElementById('hex').innerHTML = hex;
+                document.getElementById('rgb').innerHTML = 'rgb(' + rgb.r.toFixed() + ',' + rgb.g.toFixed() + ',' + rgb.b.toFixed() + ')';
+                document.getElementById('hsv').innerHTML = 'hsv(' + hsv.h.toFixed() + ',' + hsv.s.toFixed(2) + ',' + hsv.v.toFixed(2) + ')';
+
+                document.getElementById('pcr_bg').style.backgroundColor = hex;
+                document.getElementById('color').style.color = hex;
+            });
+        cp.setHex(paletteColor);
+    </script>
   </body>
 </html>

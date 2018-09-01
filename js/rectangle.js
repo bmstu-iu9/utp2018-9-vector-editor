@@ -22,6 +22,20 @@ class Rectangle extends Figure {
         this.findIndexMerged = this.findIndexMerged.bind(this);
     }
 
+    static create(svgFigure) {
+        const rectangle = new Rectangle(svgFigure);
+        const get = attr => svgFigure.getAttribute(attr);
+        rectangle.setAttrs([get('x'), get('y'), get('width'), get('height')]);
+        rectangle.r = get('rx');
+        rectangle.updateRefPointsCoords();
+        rectangle.hideOrShow();
+        svgPanel.appendChild(rectangle.svgFig);
+        rectangle.isShowing = false;
+        rectangle.finished = true;
+        currentFigure = null;
+        return rectangle;
+    }
+
     static draw(event) {
         if (!rect.checked) {
             return;
@@ -79,6 +93,7 @@ class Rectangle extends Figure {
             return;
         }
 
+        const oldAttrs = [this.x, this.y, this.width, this.height];
         const options = optionsRect.getElementsByTagName('input');
         const clicked = getMouseCoords(event);
         let ind = this.findIndexMerged(clicked), newInd = null;
@@ -126,14 +141,24 @@ class Rectangle extends Figure {
             this.somePointTaken = someFigureTaken = false;
             this.refPoints[ind].circle.setAttribute('fill', '#FFFFFF');
             document.removeEventListener('mousemove', movePoint);
+            document.removeEventListener('keydown', returnToOld);
             this.refPoints[ind].circle.addEventListener('mousedown', this.takePoint);
             drawPanel.removeEventListener('mouseup', stopMoving);
         };
+
+        const returnToOld = ( (e) => {
+            if (e.keyCode == 27) {
+                this.setAttrs(oldAttrs);
+                this.updateRefPointsCoords();
+                stopMoving(e);
+            }
+        } ).bind(this);
 
         this.createTmpCopy();
         this.somePointTaken = someFigureTaken = true;
         this.refPoints[ind].circle.setAttribute('fill', '#0000FF');
         document.addEventListener('mousemove', movePoint);
+        document.addEventListener('keydown', returnToOld);
         this.refPoints[ind].circle.removeEventListener('mousedown', this.takePoint);
         drawPanel.addEventListener('mouseup', stopMoving);
     }
@@ -142,8 +167,6 @@ class Rectangle extends Figure {
         if (!cursor.checked || this.somePointTaken || someFigureTaken) {
             return;
         }
-
-        const clicked = getMouseCoords(event);
 
         const move = (e) => {
             const coords = getMouseCoords(e);
@@ -158,7 +181,15 @@ class Rectangle extends Figure {
             this.center.circle.setAttribute('fill', '#FFFFFF');
             this.center.circle.addEventListener('mousedown', this.moveRect);
             document.removeEventListener('mousemove', move);
+            document.removeEventListener('keydown', returnToOld);
             drawPanel.removeEventListener('mouseup', stopMoving);
+        };
+
+        const returnToOld = (e) => {
+            if (e.keyCode == 27) {
+                move(event);
+                stopMoving();
+            }
         };
 
         this.createTmpCopy();
@@ -166,6 +197,7 @@ class Rectangle extends Figure {
         this.center.circle.setAttribute('fill', '#0000FF');
         this.center.circle.removeEventListener('mousedown', this.moveRect);
         document.addEventListener('mousemove', move);
+        document.addEventListener('keydown', returnToOld);
         drawPanel.addEventListener('mouseup', stopMoving);
     }
 

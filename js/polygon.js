@@ -9,9 +9,9 @@
 'use strict';
 
 class Polygon extends Figure {
-    constructor(svgFig, angeles) {
-        super(svgFig);
-        this.n = +angeles;
+    constructor(svgFigure, angles) {
+        super(svgFigure);
+        this.n = +angles;
         this.r = -1;
         this.center = new PolygonPoint(this, { x: 0, y: 0 }, -1);
         this.center.circle.onmousedown = this.movePolygon.bind(this);
@@ -83,6 +83,7 @@ class Polygon extends Figure {
             return;
         }
 
+        const oldNumOfAngles = this.n;
         const options = optionsPolygon.getElementsByTagName('input');
         const clicked = getMouseCoords(event);
         let ind = this.findIndexMerged(clicked), newInd = null;
@@ -122,15 +123,30 @@ class Polygon extends Figure {
             this.somePointTaken = someFigureTaken = false;
             this.refPoints[ind].circle.setAttribute('fill', '#FFFFFF');
             document.removeEventListener('mousemove', movePoint);
+            document.removeEventListener('keydown', returnToOld);
             document.removeEventListener("keydown", this.updateNumOfVerts);
             this.refPoints[ind].circle.addEventListener('mousedown', this.takePoint);
             drawPanel.removeEventListener('mouseup', stopMoving);
+        } ).bind(this);
+
+        const returnToOld = ( (e) => {
+            if (e.keyCode == 27) {
+                if (this.n != oldNumOfAngles) {
+                    const update = (this.n < oldNumOfAngles) ? this.increaseNumOfVerts : this.decreaseNumOfVerts;
+                    while (this.n != oldNumOfAngles) {
+                        update();
+                    }
+                }
+                movePoint(event);
+                stopMoving(e);
+            }
         } ).bind(this);
 
         this.createTmpCopy();
         this.somePointTaken = someFigureTaken = true;
         this.refPoints[ind].circle.setAttribute('fill', '#0000FF');
         document.addEventListener('mousemove', movePoint);
+        document.addEventListener('keydown', returnToOld);
         document.addEventListener("keydown", this.updateNumOfVerts);
         this.refPoints[ind].circle.removeEventListener('mousedown', this.takePoint);
         drawPanel.addEventListener('mouseup', stopMoving);
@@ -140,8 +156,6 @@ class Polygon extends Figure {
         if (!cursor.checked || this.somePointTaken || someFigureTaken) {
             return;
         }
-
-        const clicked = getMouseCoords(event);
 
         const move = (e) => {
             const coords = getMouseCoords(e);
@@ -160,7 +174,15 @@ class Polygon extends Figure {
             this.center.circle.setAttribute('fill', '#FFFFFF');
             this.center.circle.addEventListener('mousedown', this.movePolygon);
             document.removeEventListener('mousemove', move);
+            document.removeEventListener('keydown', returnToOld);
             drawPanel.removeEventListener('mouseup', stopMoving);
+        };
+
+        const returnToOld = (e) => {
+            if (e.keyCode == 27) {
+                move(event);
+                stopMoving();
+            }
         };
 
         this.createTmpCopy();
@@ -168,6 +190,7 @@ class Polygon extends Figure {
         this.center.circle.setAttribute('fill', '#0000FF');
         this.center.circle.removeEventListener('mousedown', this.movePolygon);
         document.addEventListener('mousemove', move);
+        document.addEventListener('keydown', returnToOld);
         drawPanel.addEventListener('mouseup', stopMoving);
     }
 

@@ -6,11 +6,30 @@ const rect = document.getElementById('rect');
 const ellipse = document.getElementById('ellipse');
 const polygon = document.getElementById('polygon');
 
+/* Отобразить панель опций фигуры, по которой произойдет клик: */
+cursor.addEventListener('click', () => {
+    if (currentFigure !== null) {
+        currentFigure.showOptions();
+    }
+});
+
+/* Удаление выделенной фигуры при помощи клавиши Delete: */
+document.addEventListener('keydown', (e) => {
+    if (e.keyCode == 46 && currentFigure !== null && !currentFigure.somePointTaken && !someFigureTaken) {
+        showOptions();
+        currentFigure.hideRefPoints();
+        svgPanel.removeChild(currentFigure.svgFig);
+        currentFigure.svgFig = null;
+        currentFigure = null;
+    }
+});
+
 class Figure {
     constructor(svgFigure) {
         this.svgFig = svgFigure;
         this.refPoints = [];
         this.finished = false;
+        this.isShowing = false;
         this.somePointTaken = false;
     }
 
@@ -32,15 +51,16 @@ class Figure {
         }
     }
 
-    hideOrShow(isShowing = true) {
+    hideOrShow() {
+        this.isShowing = true;
         currentFigure = this;
 
         const check = ( () => {
-            return this.refPoints !== undefined && !this.somePointTaken && !someFigureTaken;
+            return this.svgFig !== null && !this.somePointTaken && !someFigureTaken;
         }).bind(this);
 
         const hide = ( () => {
-            if (isShowing && this.refPoints !== undefined) {
+            if (this.isShowing && this.svgFig !== null) {
                 this.hideRefPoints();
                 if (currentFigure == this) {
                     if (cursor.checked) {
@@ -48,22 +68,22 @@ class Figure {
                     }
                     currentFigure = null;
                 }
-                isShowing = false;
+                this.isShowing = false;
             }
         } ).bind(this);
         drawPanel.addEventListener('mousedown', hide);
 
         this.svgFig.addEventListener('mousedown', ( () => {
-            if (check() && !isShowing) {
+            if (check() && !this.isShowing && cursor.checked) {
                 this.showRefPoints();
                 this.showOptions();
                 currentFigure = this;
-                isShowing = true;
+                this.isShowing = true;
             }
         } ).bind(this));
 
         this.svgFig.addEventListener('mouseover', () => {
-            if (check()) {
+            if (check() && (!this.isShowing || cursor.checked)) {
                 drawPanel.removeEventListener('mousedown', hide);
             }
         });
@@ -142,9 +162,3 @@ class RefPoint {
     get y() { return +this.circle.getAttribute('cy'); }
     get r() { return +this.circle.getAttribute('r'); }
 }
-
-cursor.addEventListener('click', () => {
-    if (currentFigure !== null) {
-        currentFigure.showOptions();
-    }
-});
