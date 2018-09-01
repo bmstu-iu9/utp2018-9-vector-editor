@@ -118,7 +118,6 @@ class TextBox extends Figure {
         tbox.div.style.fontSize = '13pt';
 
         optionsText.getElementsByTagName('input')[1].value = '12';
-        optionsText.getElementsByTagName('input')[2].value = 'Черный';
         tbox.rect.center.setCoords(tbox.rect.c);
         tbox.synchronizeWithRect();
         svgPanel.appendChild(tbox.rect.svgFig);
@@ -274,17 +273,8 @@ drawPanel.addEventListener('mousedown', TextBox.draw = TextBox.draw.bind(TextBox
         changeFont(inputs[1].value);
     });
 
-    selectors[2].addEventListener("mousedown", (evt) => {
-        inputs[2].value = evt.target.innerHTML;
-        let color = 'black';
-        if(inputs[2].value[0] == "К") {
-            color = 'red';
-        }else if(inputs[2].value[0] == "С") {
-            color = 'blue';
-        }else if(inputs[2].value[0] == "З") {
-            color = 'green';
-        }
+    colorPicker.addEventListener("mousedown", (evt) => {
         evt.preventDefault();
-        document.execCommand('forecolor', false, color);
+        document.execCommand('forecolor', false, paletteColor);
     });
 }

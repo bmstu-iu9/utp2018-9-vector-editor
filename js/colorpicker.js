@@ -120,8 +120,8 @@
             a.attachEvent("onclick", t(this, a, b));
             b.attachEvent("onclick", u(this, b))
         } else if (a.addEventListener) {
-            a.addEventListener("click", t(this, a, b), false);
-            b.addEventListener("click", u(this, b), false)
+            a.addEventListener("mousedown", t(this, a, b), false);
+            b.addEventListener("mousedown", u(this, b), false)
         }
     }
 
