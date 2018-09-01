@@ -32,7 +32,7 @@ class Line extends Figure {
         const options = optionsLine.getElementsByTagName('input');
         const obj = new Line(createSVGElem('line',
             'undefined',
-            '#FF0000',
+            paletteColor,
             options[0].value,
             '1'));
         svgPanel.appendChild(obj.svgFig);
