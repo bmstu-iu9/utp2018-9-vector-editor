@@ -6,7 +6,7 @@
 
 let dx,dy,shape,x,y,path,pathTaken = false;
 let isDrawing=false;
-let color='black',width,linecap='round',linejoin='round';
+let width,linecap='round',linejoin='round';
 const brsh = document.getElementById('brush');
 const crsr = document.getElementById('cursor');
 
@@ -175,7 +175,7 @@ const crsr = document.getElementById('cursor');
     shape = document.createElementNS(svgNS, "path");
     shape.setAttribute('fill', 'none');
     shape.setAttribute('stroke-width', width);
-    shape.setAttribute('stroke', color);
+    shape.setAttribute('stroke', paletteColor);
     shape.setAttribute('stroke-linecap', linecap);
     shape.setAttribute('stroke-linejoin', linejoin);
 
@@ -216,4 +216,3 @@ const crsr = document.getElementById('cursor');
 drawPanel.addEventListener('mousedown',start);
 
 changeThickness();
-

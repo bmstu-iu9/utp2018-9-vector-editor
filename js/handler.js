@@ -29,3 +29,9 @@ for (let i = 0; i < ids.length; i++) {
     instruments[i].addEventListener('click', changeLabelSelected);
     instruments[i].addEventListener('click', showOptions);
 }
+
+let buttonColor = document.getElementById('button-color');
+let colorPicker = document.getElementById('color-picker');
+buttonColor.addEventListener('click', function() { colorPicker.classList.toggle('show-option'); });
+
+let paletteColor = '#000000';
