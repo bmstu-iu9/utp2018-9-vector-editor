@@ -20,7 +20,7 @@ const getMouseCoords = (event) => {
 
 /*Функция, создающая SVG элемент. При желании добавить новые аргументы по
 умолчанию, добавлять их в конец. При этом обычные аргументы добавлять нельзя.*/
-const createSVGElem = (type, f = '#FFFFFF', s = '#000000', sw = '1', so = '1', fo = '1') => {
+const createSVGElem = (type, f = '#FFFFFF', s = paletteColor, sw = '1', so = '1', fo = '1') => {
     const elem = document.createElementNS(svgNS, type);
     elem.setAttribute('fill', f);
     elem.setAttribute('stroke', s);
