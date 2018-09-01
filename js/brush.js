@@ -212,6 +212,14 @@ const crsr = document.getElementById('cursor');
       BrushBox.draw();
     };
 
+{
+    const inputs = optionsBrush.getElementsByTagName('input');
+    const selectors = optionsBrush.getElementsByTagName('ul');
+    Figure.addPanelListener(BrushBox, inputs, selectors, 0, () => {
+        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
+    });
+}
+
 
 drawPanel.addEventListener('mousedown',start);
 
