@@ -7,6 +7,10 @@ class Line extends Figure {
         this.center = new LinePoint(this);
         this.center.circle.onmousedown = this.moveLine.bind(this);
 
+        let isErasing = false;
+        this.svgFig.addEventListener('mousedown', this.erase.bind(this));
+        this.svgFig.addEventListener('mousemove', this.start.bind(this));
+
         this.refPoints.push(new LinePoint(this));
         this.refPoints.push(new LinePoint(this));
     }
@@ -63,6 +67,81 @@ class Line extends Figure {
 
         document.addEventListener('mousemove', moveLine);
         drawPanel.addEventListener('mouseup', stopMoving);
+    }
+        
+    erase(event) {
+        if (!eraser.checked) return;
+        isErasing = true;
+    }
+
+    start(event) {
+        if (!isErasing) return;
+
+        const calcPointToCut = (src, dest, eraserCoord) => {
+            const temp = (dest.x - src.x) / (dest.y - src.y);
+            const y = (eraserCoord.x - src.x + eraserCoord.y/temp + temp*src.y) / (temp + 1/temp);
+            const x = temp * (y - src.y) + src.x;
+            return { x: x, y: y };
+        }
+
+        const getDist = (src, dest) => {
+            const dx = dest.x - src.x;
+            const dy = dest.y - src.y;
+            return Math.sqrt(dx*dx + dy*dy);
+        }
+        
+        const options = optionsEraser.getElementsByTagName('input');
+        const current = getMouseCoords(event);
+        const width = options[0].value / 2;
+        const eraserCoords = [ { x: current.x - width, y: current.y + width },
+                               { x: current.x + width, y: current.y + width },
+                               { x: current.x + width, y: current.y - width },
+                               { x: current.x - width, y: current.y - width } ];
+
+        let min1 = this.length, min2 = this.length;
+        let point1 = { x: 0, y: 0 }, point2 = { x: 0, y: 0 };
+        for (let i = 0; i < eraserCoords.length; i++) {
+            const point = calcPointToCut({ x: this.x1, y: this.y1 },
+                                         { x: this.x2, y: this.y2 },
+                                         eraserCoords[i]);
+            const dist1 = getDist({ x: this.x1, y: this.y1 }, point);
+            if (min1 > dist1) {
+                min1 = dist1;
+                point1 = point;
+            }
+            const dist2 = getDist(point, { x: this.x2, y: this.y2 });
+            if (min2 > dist2) {
+                min2 = dist2;
+                point2 = point;
+            }
+        }
+
+        const maxX = this.x1 > this.x2 ? this.x1 : this.x2;
+        const maxY = this.y1 > this.y2 ? this.y1 : this.y2;
+        const minX = this.x1 < this.x2 ? this.x1 : this.x2;
+        const minY = this.y1 < this.y2 ? this.y1 : this.y2;
+
+        if (minX <= point1.x && point1.x <= maxX && minY <= point1.y && point1.y <= maxY) {
+            const obj = Line.create(createSVGElem('line'));
+            copySVGStyle(obj.svgFig, this.svgFig);
+            obj.x1 = this.x1;    obj.y1 = this.y1;
+            obj.x2 = point1.x;   obj.y2 = point1.y;
+            svgPanel.appendChild(obj.svgFig);
+            obj.updateRefPointsCoords();
+        }
+
+        if (minX <= point2.x && point2.x <= maxX && minY <= point2.y && point2.y <= maxY) {
+            const obj = Line.create(createSVGElem('line'));
+            copySVGStyle(obj.svgFig, this.svgFig);
+            obj.x1 = point2.x;   obj.y1 = point2.y;
+            obj.x2 = this.x2;    obj.y2 = this.y2;
+            svgPanel.appendChild(obj.svgFig);
+            obj.updateRefPointsCoords();
+        }
+
+        svgPanel.removeChild(this.svgFig);
+        this.svgFig = null;
+        currentFigure = null;
     }
 
     takePoint(event) {
@@ -223,6 +302,7 @@ class Line extends Figure {
         const options = optionsLine.getElementsByTagName('input');
         options[0].value = this.svgFig.getAttribute('stroke-width');
         options[1].value = this.length;
+        cp.setHex( this.svgFig.getAttribute('stroke') );
     }
 
     set x1(v) { this.svgFig.setAttribute('x1', +v); }
@@ -272,5 +352,11 @@ drawPanel.addEventListener('mousedown', Line.draw = Line.draw.bind(Line));
         currentFigure.x2 = currentFigure.x1 + (+inputs[1].value * cos);
         currentFigure.y2 = currentFigure.y1 + (+inputs[1].value * sin);
         currentFigure.updateRefPointsCoords();
+    });
+    
+    colorPicker.addEventListener("mousedown", (event) => {
+        if (currentFigure.svgFig != null) {
+            currentFigure.svgFig.setAttribute('stroke', paletteColor);
+        }
     });
 }
