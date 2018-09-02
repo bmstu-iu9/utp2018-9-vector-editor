@@ -320,8 +320,10 @@
                 document.getElementById('color').style.color = hex;
             });
         colorPicker.addEventListener('click', () => {
-            if (currentFigure !== null) {
+             if (currentFigure !== null && !(currentFigure instanceof BrushBox)) {
                 currentFigure.svgFig.setAttribute('fill', paletteColor);
+            }else if (currentFigure !== null && currentFigure instanceof BrushBox) {
+                currentFigure.svgFig.setAttribute('stroke', paletteColor);
             }
         });
         cp.setHex(paletteColor);
