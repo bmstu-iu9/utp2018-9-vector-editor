@@ -34,12 +34,12 @@ class Polygon extends Figure {
         let click = getMouseCoords(event);
         let moving = false;
         const options = optionsPolygon.getElementsByTagName('input');
-        const pg = new Polygon(createSVGElem('polygon', 'none', undefined, +options[0].value), +options[1].value);
+        const pg = new Polygon(createSVGElem('polygon', undefined, '#000000', 0), +options[0].value);
         svgPanel.appendChild(pg.svgFig);
         ({ x: pg.center.x, y: pg.center.y } = click);
 
         if (event.ctrlKey) {
-            pg.moveFixedOnBottom(options[2].value, 0);
+            pg.moveFixedOnBottom(options[1].value, 0);
             pg.hideOrShow();
             pg.showRefPoints();
             pg.finished = true;
@@ -53,11 +53,11 @@ class Polygon extends Figure {
                 const [dx, dy] = [coords.x - pg.center.x, coords.y - pg.center.y];
                 const radius = Math.sqrt(dx*dx + dy*dy);
                 pg.moveFixedOnBottom(radius, 0);
-                options[2].value = pg.r;
+                options[1].value = pg.r;
                 return;
             }
             pg.moveUnfixed(coords, 0);
-            options[2].value = pg.r;
+            options[1].value = pg.r;
         };
 
         const stopMoving = () => {
@@ -104,18 +104,18 @@ class Polygon extends Figure {
                 const [dx, dy] = [coords.x - this.center.x, coords.y - this.center.y];
                 const radius = Math.sqrt(dx*dx + dy*dy);
                 this.moveWithFixedAngeles(radius);
-                options[1].value = this.n;
-                options[2].value = this.r;
+                options[0].value = this.n;
+                options[1].value = this.r;
                 return;
             } else if (e.ctrlKey) {
                 this.moveWithFixedRadius(coords, ind);
-                options[1].value = this.n;
-                options[2].value = this.r;
+                options[0].value = this.n;
+                options[1].value = this.r;
                 return;
             }
             this.moveUnfixed(coords, ind);
-            options[1].value = this.n;
-            options[2].value = this.r;
+            options[0].value = this.n;
+            options[1].value = this.r;
         } ).bind(this);
 
         const stopMoving = ( (e) => {
@@ -238,10 +238,10 @@ class Polygon extends Figure {
     updateNumOfVerts(event) {
         const options = optionsPolygon.getElementsByTagName('input');
         if (event.keyCode == 38) {
-            options[1].value++;
+            options[0].value++;
             this.increaseNumOfVerts();
         } else if (event.keyCode == 40 && this.n > 3) {
-            options[1].value--;
+            options[0].value--;
             this.decreaseNumOfVerts();
         }
     }
@@ -269,26 +269,27 @@ class Polygon extends Figure {
     showRefPoints() {
         this.refPoints.forEach(p => svgPanel.appendChild(p.circle));
         svgPanel.appendChild(this.center.circle);
+        this.svgFig.setAttribute('stroke-width', 1);
     }
 
     hideRefPoints() {
         this.refPoints.forEach(p => svgPanel.removeChild(p.circle));
         svgPanel.removeChild(this.center.circle);
+        this.svgFig.setAttribute('stroke-width', 0);
     }
 
     createTmpCopy() {
         this.copy = createSVGElem('polygon', 'none', '#000000', '1', '0.5', '0.5');
         this.copy.setAttribute('points', this.svgFig.getAttribute('points'));
-        svgPanel.insertBefore(this.copy, this.svgFig);
+        svgPanel.insertBefore(this.copy, this.svgFig.nextSibling);
     }
 
     showOptions() {
         hideAllOptions();
         optionsPolygon.classList.add('show-option');
         const options = optionsPolygon.getElementsByTagName('input');
-        options[0].value = this.svgFig.getAttribute('stroke-width');
-        options[1].value = this.n;
-        options[2].value = this.r;
+        options[0].value = this.n;
+        options[1].value = this.r;
     }
 }
 
@@ -312,10 +313,7 @@ drawPanel.addEventListener('mousedown', Polygon.draw = Polygon.draw.bind(Polygon
     const inputs = optionsPolygon.getElementsByTagName('input');
     const selectors = optionsPolygon.getElementsByTagName('ul');
     Figure.addPanelListener(Polygon, inputs, selectors, 0, () => {
-        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
-    });
-    Figure.addPanelListener(Polygon, inputs, selectors, 1, () => {
-        let n = +inputs[1].value;
+        let n = +inputs[0].value;
         if (n < 3) {
             n = 3;
         }
@@ -327,7 +325,7 @@ drawPanel.addEventListener('mousedown', Polygon.draw = Polygon.draw.bind(Polygon
             }
         }
     });
-    Figure.addPanelListener(Polygon, inputs, selectors, 2, () => {
-        currentFigure.moveWithFixedAngeles(+inputs[2].value);
+    Figure.addPanelListener(Polygon, inputs, selectors, 1, () => {
+        currentFigure.moveWithFixedAngeles(+inputs[1].value);
     });
 }

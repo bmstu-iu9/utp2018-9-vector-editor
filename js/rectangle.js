@@ -44,14 +44,14 @@ class Rectangle extends Figure {
         let click = getMouseCoords(event);
         let moving = false;
         const options = optionsRect.getElementsByTagName('input');
-        const rectangle = new Rectangle(createSVGElem('rect', 'none', undefined, +options[0].value));
+        const rectangle = new Rectangle(createSVGElem('rect', undefined, '#000000', 0));
         ({ x: rectangle.x, y: rectangle.y } = click);
-        rectangle.r = +options[1].value;
+        rectangle.r = +options[0].value;
         svgPanel.appendChild(rectangle.svgFig);
 
         if (event.ctrlKey) {
-            rectangle.height = +options[2].value;
-            rectangle.width = +options[3].value;
+            rectangle.height = +options[1].value;
+            rectangle.width = +options[2].value;
             rectangle.updateRefPointsCoords();
             rectangle.center.setCoords(rectangle.c);
             rectangle.hideOrShow();
@@ -67,8 +67,8 @@ class Rectangle extends Figure {
                 click = rectangle.getSymmetrical(current);
             }
             rectangle.moveByAngeles(click, current);
-            options[2].value = rectangle.height;
-            options[3].value = rectangle.width;
+            options[1].value = rectangle.height;
+            options[2].value = rectangle.width;
         };
 
         const stopMoving = () => {
@@ -128,8 +128,8 @@ class Rectangle extends Figure {
                 ind = newInd;
                 this.refPoints[ind].circle.setAttribute('fill', '#0000FF');
             }
-            options[2].value = this.height;
-            options[3].value = this.width;
+            options[1].value = this.height;
+            options[2].value = this.width;
         } ).bind(this);
 
         const stopMoving = (e) => {
@@ -218,11 +218,13 @@ class Rectangle extends Figure {
     showRefPoints() {
         this.refPoints.forEach(p => svgPanel.appendChild(p.circle));
         svgPanel.appendChild(this.center.circle);
+        this.svgFig.setAttribute('stroke-width', 1);
     }
 
     hideRefPoints() {
         this.refPoints.forEach(p => svgPanel.removeChild(p.circle));
         svgPanel.removeChild(this.center.circle);
+        this.svgFig.setAttribute('stroke-width', 0);
     }
 
     moveByAngeles(a, c) {
@@ -274,17 +276,16 @@ class Rectangle extends Figure {
         this.copy.setAttribute('height', this.height);
         this.copy.setAttribute('rx', this.r);
         this.copy.setAttribute('ry', this.r);
-        svgPanel.insertBefore(this.copy, this.svgFig);
+        svgPanel.insertBefore(this.copy, this.svgFig.nextSibling);
     }
 
     showOptions() {
         hideAllOptions();
         optionsRect.classList.add('show-option');
         const options = optionsRect.getElementsByTagName('input');
-        options[0].value = this.svgFig.getAttribute('stroke-width');
-        options[1].value = this.r;
-        options[2].value = this.height;
-        options[3].value = this.width;
+        options[0].value = this.r;
+        options[1].value = this.height;
+        options[2].value = this.width;
     }
 
     get x() { return +this.svgFig.getAttribute('x'); }
@@ -323,17 +324,14 @@ drawPanel.addEventListener('mousedown', Rectangle.draw = Rectangle.draw.bind(Rec
     const inputs = optionsRect.getElementsByTagName('input');
     const selectors = optionsRect.getElementsByTagName('ul');
     Figure.addPanelListener(Rectangle, inputs, selectors, 0, () => {
-        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
+        currentFigure.r = +inputs[0].value;
     });
     Figure.addPanelListener(Rectangle, inputs, selectors, 1, () => {
-        currentFigure.r = +inputs[1].value;
-    });
-    Figure.addPanelListener(Rectangle, inputs, selectors, 2, () => {
-        currentFigure.height = +inputs[2].value;
+        currentFigure.height = +inputs[1].value;
         currentFigure.updateRefPointsCoords();
     });
-    Figure.addPanelListener(Rectangle, inputs, selectors, 3, () => {
-        currentFigure.width = +inputs[3].value;
+    Figure.addPanelListener(Rectangle, inputs, selectors, 2, () => {
+        currentFigure.width = +inputs[2].value;
         currentFigure.updateRefPointsCoords();
     });
 }

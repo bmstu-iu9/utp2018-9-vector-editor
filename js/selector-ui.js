@@ -1,5 +1,4 @@
 /*Панели опций*/
-const optionsPen = document.getElementById('options-pen');
 const optionsText = document.getElementById('options-text');
 const optionsLine = document.getElementById('options-line');
 const optionsRect = document.getElementById('options-rect');
@@ -22,7 +21,6 @@ for (let i = 0; i < allSelectors.length; i++) {
 
 /*Функция, скрывающая всю панель опций*/
 const hideAllOptions = () => {
-    optionsPen.classList.remove('show-option');
     optionsText.classList.remove('show-option');
     optionsLine.classList.remove('show-option');
     optionsRect.classList.remove('show-option');
@@ -37,9 +35,7 @@ const hideAllOptions = () => {
 const showOptions = () => {
     hideAllOptions();
 
-    if (currentInstrument.alt == 'Перо') {
-        optionsPen.classList.add('show-option');
-    } else if (currentInstrument.alt == 'Текст') {
+    if (currentInstrument.alt == 'Текст') {
         optionsText.classList.add('show-option');
     } else if (currentInstrument.alt == 'Прямая') {
         optionsLine.classList.add('show-option');
