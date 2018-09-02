@@ -58,8 +58,7 @@ class Polyline extends Figure {
         }
 
         const clickCoord = getMouseCoords(event);
-        const options = optionsPen.getElementsByTagName('input');
-        const pl = new Polyline(createSVGElem('polyline', 'none', undefined, +options[0].value));
+        const pl = new Polyline(createSVGElem('polyline', undefined, '#000000'));
         pl.createTmpLine(clickCoord);
         svgPanel.appendChild(pl.svgFig);
         svgPanel.appendChild(pl.tmpLine);
@@ -107,10 +106,12 @@ class Polyline extends Figure {
 
     hideRefPoints() {
         this.refPoints.forEach(p => svgPanel.removeChild(p.circle));
+        this.svgFig.setAttribute('stroke-width', 0);
     }
 
     showRefPoints() {
         this.refPoints.forEach(p => svgPanel.appendChild(p.circle));
+        this.svgFig.setAttribute('stroke-width', 1);
     }
 
     finishByLeftPanel() {
@@ -265,7 +266,7 @@ class Polyline extends Figure {
     }
 
     createTmpLine(start) {
-        this.tmpLine = createSVGElem('line', undefined, undefined, undefined, '0.5');
+        this.tmpLine = createSVGElem('line', undefined, '#000000', undefined, '0.5');
         this.tmpLine.setAttribute('x1', start.x);
         this.tmpLine.setAttribute('y1', start.y);
         this.tmpLine.setAttribute('x2', start.x);
@@ -288,7 +289,7 @@ class Polyline extends Figure {
 
     createTmpPartCopy(indOfTaken) {
         this.copy = createSVGElem('polyline', 'none', '#000000', '1', '0.5', '0.5');
-        svgPanel.insertBefore(this.copy, this.svgFig);
+        svgPanel.insertBefore(this.copy, this.svgFig.nextSibling);
 
         const appendAll = (...inds) => {
             inds.forEach(i => this.copy.points.appendItem(this.svgFig.points[i]));
@@ -309,16 +310,11 @@ class Polyline extends Figure {
 
     createTmpCopy(indOfTaken) {
         this.copy = createSVGElem(this.svgFig.tagName, 'none', '#000000', '1', '0.5', '0.5');
-        svgPanel.insertBefore(this.copy, this.svgFig);
+        svgPanel.insertBefore(this.copy, this.svgFig.nextSibling);
         this.copy.setAttribute('points', this.svgFig.getAttribute('points'));
     }
 
-    showOptions() {
-        hideAllOptions();
-        optionsPen.classList.add('show-option');
-        const options = optionsPen.getElementsByTagName('input');
-        options[0].value = this.svgFig.getAttribute('stroke-width');
-    }
+    showOptions() {}
 }
 
 class PolylinePoint extends RefPoint {
@@ -337,11 +333,3 @@ class PolylinePoint extends RefPoint {
 }
 
 drawPanel.addEventListener('click', Polyline.draw = Polyline.draw.bind(Polyline));
-
-{
-    const inputs = optionsPen.getElementsByTagName('input');
-    const selectors = optionsPen.getElementsByTagName('ul');
-    Figure.addPanelListener(Polyline, inputs, selectors, 0, () => {
-        currentFigure.svgFig.setAttribute('stroke-width', +inputs[0].value);
-    });
-}

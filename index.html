@@ -27,24 +27,6 @@
         <b id="selected-instrument">Курсор</b>
       </div>
       <div id="options">
-          <div id="options-pen">
-              <div class="selector">
-                  <span class="selector-label">Толщина линии, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
-                  <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
-                  <ul class="selector-ul">
-                      <li class="selector-li">1</li>
-                      <li class="selector-li">2</li>
-                      <li class="selector-li">3</li>
-                      <li class="selector-li">4</li>
-                      <li class="selector-li">5</li>
-                      <li class="selector-li">7</li>
-                      <li class="selector-li">10</li>
-                      <li class="selector-li">13</li>
-                      <li class="selector-li">15</li>
-                  </ul>
-              </div>
-          </div>
           <div id="options-line">
               <div class="selector">
                   <span class="selector-label">Толщина линии, px:</span>
@@ -102,23 +84,6 @@
           </div>
           <div id="options-rect">
               <div class="selector">
-                  <span class="selector-label">Толщина обводки, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
-                  <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
-                  <ul class="selector-ul">
-                      <li class="selector-li">0</li>
-                      <li class="selector-li">1</li>
-                      <li class="selector-li">2</li>
-                      <li class="selector-li">3</li>
-                      <li class="selector-li">4</li>
-                      <li class="selector-li">5</li>
-                      <li class="selector-li">7</li>
-                      <li class="selector-li">10</li>
-                      <li class="selector-li">13</li>
-                      <li class="selector-li">15</li>
-                  </ul>
-              </div>
-              <div class="selector">
                   <span class="selector-label">Радиус скругления, px:</span>
                   <input style="width: 35px;" type="text" class="selector-field" />
                   <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
@@ -154,23 +119,6 @@
           </div>
           <div id="options-ellipse">
               <div class="selector">
-                  <span class="selector-label">Толщина обводки, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
-                  <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
-                  <ul class="selector-ul">
-                      <li class="selector-li">0</li>
-                      <li class="selector-li">1</li>
-                      <li class="selector-li">2</li>
-                      <li class="selector-li">3</li>
-                      <li class="selector-li">4</li>
-                      <li class="selector-li">5</li>
-                      <li class="selector-li">7</li>
-                      <li class="selector-li">10</li>
-                      <li class="selector-li">13</li>
-                      <li class="selector-li">15</li>
-                  </ul>
-              </div>
-              <div class="selector">
                   <span class="selector-label">Высота, px:</span>
                   <input style="width: 35px;" type="text" class="selector-field" />
                   <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
@@ -192,23 +140,6 @@
               </div>
           </div>
           <div id="options-polygon">
-              <div class="selector">
-                  <span class="selector-label">Толщина обводки, px:</span>
-                  <input style="width: 35px;" type="text" class="selector-field" />
-                  <button type="button" class="selector-button"><i style="color: white;" class="fas fa-sort-down"></i></button>
-                  <ul class="selector-ul">
-                      <li class="selector-li">0</li>
-                      <li class="selector-li">1</li>
-                      <li class="selector-li">2</li>
-                      <li class="selector-li">3</li>
-                      <li class="selector-li">4</li>
-                      <li class="selector-li">5</li>
-                      <li class="selector-li">7</li>
-                      <li class="selector-li">10</li>
-                      <li class="selector-li">13</li>
-                      <li class="selector-li">15</li>
-                  </ul>
-              </div>
               <div class="selector">
                   <span class="selector-label">Количество углов:</span>
                   <input style="width: 35px;" type="text" class="selector-field" />
@@ -373,14 +304,14 @@
     <script src="js/colorpicker.js"></script>
     <script type="text/javascript">
         cp = ColorPicker(document.getElementById('pcr'), document.getElementById('picker'),
-            function(hex, hsv, rgb, mousePicker, mousepcr) {
+            (hex, hsv, rgb, mousePicker, mousepcr) => {
                 currentColor = hex;
                 paletteColor = currentColor;
                 ColorPicker.positionIndicators(
                     document.getElementById('pcr-indicator'),
                     document.getElementById('picker-indicator'),
                     mousepcr, mousePicker);
-                
+
                 document.getElementById('hex').innerHTML = hex;
                 document.getElementById('rgb').innerHTML = 'rgb(' + rgb.r.toFixed() + ',' + rgb.g.toFixed() + ',' + rgb.b.toFixed() + ')';
                 document.getElementById('hsv').innerHTML = 'hsv(' + hsv.h.toFixed() + ',' + hsv.s.toFixed(2) + ',' + hsv.v.toFixed(2) + ')';
@@ -388,9 +319,10 @@
                 document.getElementById('pcr_bg').style.backgroundColor = hex;
                 document.getElementById('color').style.color = hex;
             });
-        colorPicker.addEventListener('click',function(){
-            if (currentFigure)
-                currentFigure.svgFig.setAttribute('stroke', paletteColor);
+        colorPicker.addEventListener('click', () => {
+            if (currentFigure !== null) {
+                currentFigure.svgFig.setAttribute('fill', paletteColor);
+            }
         });
         cp.setHex(paletteColor);
     </script>
