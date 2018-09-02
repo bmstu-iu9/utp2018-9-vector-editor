@@ -223,6 +223,7 @@ class Line extends Figure {
         const options = optionsLine.getElementsByTagName('input');
         options[0].value = this.svgFig.getAttribute('stroke-width');
         options[1].value = this.length;
+		cp.setHex( this.svgFig.getAttribute('stroke') );
     }
 
     set x1(v) { this.svgFig.setAttribute('x1', +v); }
@@ -273,4 +274,8 @@ drawPanel.addEventListener('mousedown', Line.draw = Line.draw.bind(Line));
         currentFigure.y2 = currentFigure.y1 + (+inputs[1].value * sin);
         currentFigure.updateRefPointsCoords();
     });
+	
+	colorPicker.addEventListener("mousedown", (event) => {
+		currentFigure.svgFig.setAttribute('stroke', paletteColor);
+	});
 }
