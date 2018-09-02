@@ -320,9 +320,9 @@
                 document.getElementById('color').style.color = hex;
             });
         colorPicker.addEventListener('click', () => {
-             if (currentFigure !== null && !(currentFigure instanceof BrushBox)) {
+            if (currentFigure !== null && !(currentFigure instanceof BrushBox) && !(currentFigure instanceof Line)) {
                 currentFigure.svgFig.setAttribute('fill', paletteColor);
-            }else if (currentFigure !== null && currentFigure instanceof BrushBox) {
+            }else if (currentFigure !== null && ((currentFigure instanceof BrushBox) || (currentFigure instanceof Line))) {
                 currentFigure.svgFig.setAttribute('stroke', paletteColor);
             }
         });
