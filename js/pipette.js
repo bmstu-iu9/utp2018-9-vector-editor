@@ -10,7 +10,7 @@ const backPanel = document.getElementById('back-panel');
 backPanel.onmousemove = (event) => {
     if (!pipette.checked) return;
 
-	clear();
+    clear();
     const coord = getBoxCoords(drawPanel);
 
     if (coord.left >= event.pageX || coord.top >= event.pageY ||
@@ -35,24 +35,17 @@ backPanel.onmousemove = (event) => {
 const clear = () => {
     if (arr.length != 0) {
         for (let i = 0; i < arr.length; i++) {
-            svgPanel.removeChild(arr[i]);
+            if (svgPanel.contains(arr[i])) {
+                svgPanel.removeChild(arr[i]);
+            }
         }
         arr = [];
     }
 }
 
-const invertColor = (color) => {
-    color = color.match(/^#?([\dabcdef]{2})([\dabcdef]{2})([\dabcdef]{2})$/i);
-    if (!color) return false;
-    for (var i = 1, s = "#"; i <= 3; i++) {
-        s += (255 - parseInt(color[i], 16)).toString(16).toUpperCase().replace(/^(.)$/, "0$1");
-    }
-    return s;
-}
-
-function check(event) {
+const mousedown = (event) => {
     if (!pipette.checked) return;
-	cp.setHex(arr[0].getAttribute('fill'));
+    cp.setHex(arr[0].getAttribute('fill'));
 }
 
 const getColor = (event) => {
@@ -65,16 +58,25 @@ const getColor = (event) => {
     canvas.width = img.width;
     canvas.height = img.height;
     ctx.drawImage(img, 0, 0, img.width, img.height);
-	
+    
     const click = getMouseCoords(event);
     const data = ctx.getImageData(click.x, click.y, 1, 1).data;
 
     return rgb2hex(data[0], data[1], data[2], data[3]);
 }
 
-function rgb2hex(r, g, b, a) {
+const rgb2hex = (r, g, b, a) => {
     if (r == 0 && g == 0 && b == 0 && a == 0) return '#FFFFFF';
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
-svgPanel.addEventListener('mousedown', check);
+const invertColor = (color) => {
+    color = color.match(/^#?([\dabcdef]{2})([\dabcdef]{2})([\dabcdef]{2})$/i);
+    if (!color) return false;
+    for (var i = 1, s = "#"; i <= 3; i++) {
+        s += (255 - parseInt(color[i], 16)).toString(16).toUpperCase().replace(/^(.)$/, "0$1");
+    }
+    return s;
+}
+
+drawPanel.addEventListener('mousedown', mousedown);
