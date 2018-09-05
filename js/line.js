@@ -353,9 +353,9 @@ drawPanel.addEventListener('mousedown', Line.draw = Line.draw.bind(Line));
         currentFigure.y2 = currentFigure.y1 + (+inputs[1].value * sin);
         currentFigure.updateRefPointsCoords();
     });
-    
+
     colorPicker.addEventListener("mousedown", (event) => {
-        if (currentFigure.svgFig != null) {
+        if (currentFigure != null) {
             currentFigure.svgFig.setAttribute('stroke', paletteColor);
         }
     });
