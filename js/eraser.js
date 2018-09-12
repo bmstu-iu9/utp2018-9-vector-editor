@@ -5,7 +5,7 @@
 
 let eraser = document.getElementById('eraser');
 let isErasing = false;
-let end, strt, type, value, index = 0, Path1, Path2, currentPath;
+let end, strt, type, value, index = 0, Path1, Path2, currentPath,pathColor;
 
 const startErasing = () => {
 
@@ -119,7 +119,7 @@ const erase = (event) => {
     if (isErasing) {
         if (event.target.toString() === '[object SVGPathElement]') {
             currentPath = event.target;
-            color = event.target.getAttribute('stroke');
+            pathColor = event.target.getAttribute('stroke');
             width = event.target.getAttribute('stroke-width');
             type = event.target.getAttribute('stroke-linecap');
             linejoin = event.target.getAttribute('stroke-linejoin');
@@ -130,7 +130,7 @@ const erase = (event) => {
                     shape = document.createElementNS(svgNS, "path");
                     shape.setAttribute('fill', 'none');
                     shape.setAttribute('stroke-width', width);
-                    shape.setAttribute('stroke', color);
+                    shape.setAttribute('stroke', pathColor);
                     shape.setAttribute('stroke-linecap', type);
                     shape.setAttribute('stroke-linejoin', linejoin);
                     shape.setAttribute('d', Path1);
@@ -141,7 +141,7 @@ const erase = (event) => {
                     shape = document.createElementNS(svgNS, "path");
                     shape.setAttribute('fill', 'none');
                     shape.setAttribute('stroke-width', width);
-                    shape.setAttribute('stroke', color);
+                    shape.setAttribute('stroke', pathColor);
                     shape.setAttribute('stroke-linecap', type);
                     shape.setAttribute('stroke-linejoin', linejoin);
                     shape.setAttribute('d', Path2);

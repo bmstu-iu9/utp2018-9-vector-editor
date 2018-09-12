@@ -123,11 +123,10 @@ class Figure {
 class RefPoint {
     constructor(figure, coords, instrument) {
         this.figure = figure;
-        this.circle = createSVGElem('circle');
+        this.circle = createSVGElem('circle', '#FFFFFF', '#000000');
         this.circle.setAttribute('r', 3);
         this.circle.setAttribute('cx', coords.x);
         this.circle.setAttribute('cy', coords.y);
-
         this.circle.addEventListener('mouseover', this.dispatchAndColor.bind(this, 'mouseover', '#0000FF', instrument));
         this.circle.addEventListener('mouseout', this.dispatchAndColor.bind(this, 'mouseout', '#FFFFFF', instrument));
     }
